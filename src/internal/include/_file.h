@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
-#include <jos.h>
+#include <stddef.h>
+#include <josrt.h>
 
 typedef struct _IO_FILE {
 
@@ -39,7 +40,7 @@ typedef struct _IO_FILE {
 #define _io_file_update_pos(f, l)\
     (f)->_pos += l
 
-_JOS_INLINE_FUNC int _fflush(IO_FILE* stream) {
+_JOSRT_INLINE_FUNC int _fflush(IO_FILE* stream) {
     if (stream->_buffer._wp > stream->_buffer._begin) {
         stream->write(stream, stream->_buffer._begin, stream->_buffer._wp - stream->_buffer._begin);
         stream->_buffer._wp = stream->_buffer._begin;
@@ -47,7 +48,7 @@ _JOS_INLINE_FUNC int _fflush(IO_FILE* stream) {
     return 0;
 }
 
-_JOS_INLINE_FUNC int _fwrite(const char* src, size_t elem_size, size_t elem_count, IO_FILE* stream) {
+_JOSRT_INLINE_FUNC int _fwrite(const char* src, size_t elem_size, size_t elem_count, IO_FILE* stream) {
     size_t transferred = 0;
     size_t transfer_size = elem_size * elem_count;
     while (transfer_size) {
@@ -72,7 +73,7 @@ _JOS_INLINE_FUNC int _fwrite(const char* src, size_t elem_size, size_t elem_coun
     return (int)transferred;
 }
 
-_JOS_INLINE_FUNC int _fread(void* buffer, size_t elem_size, size_t elem_count, IO_FILE* stream) {
+_JOSRT_INLINE_FUNC int _fread(void* buffer, size_t elem_size, size_t elem_count, IO_FILE* stream) {
     char* wp = (char*)buffer;
     size_t transferred = 0;
     size_t transfer_size = elem_size * elem_count;
@@ -88,7 +89,7 @@ _JOS_INLINE_FUNC int _fread(void* buffer, size_t elem_size, size_t elem_count, I
     return (int)transferred;
 }
 
-_JOS_INLINE_FUNC size_t _ftell(IO_FILE* stream) {
+_JOSRT_INLINE_FUNC size_t _ftell(IO_FILE* stream) {
     return stream->_pos;
 }
 

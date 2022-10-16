@@ -9,11 +9,7 @@
  * 
  */
 
-#ifdef _JOS_KERNEL_BUILD
 #include <extensions/base64.h>
-#else
-#include "..\include\extensions\base64.h"
-#endif
 #include <string.h>
 
 static const unsigned char base64_table[65] =

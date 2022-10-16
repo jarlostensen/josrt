@@ -1,35 +1,5 @@
-target_sources(c PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/memcmp.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/memcpy.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/memmove.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/memset.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/strlen.c"    
-    "${CMAKE_CURRENT_SOURCE_DIR}/string/strcmp.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/stdio/print.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/extensions/slices.c"  
-    "${CMAKE_CURRENT_SOURCE_DIR}/extensions/base64.c"  
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_vprint.c"    
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_wchar.c"    
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/pow.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/pow_data.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/exp_data.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/exp2f_data.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/ceil.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/floor.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/fabs.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/math/fabsf.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/stdlib/rand.c"    
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_toupper.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_tolower.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_isupper.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_islower.c"    
-)
-target_include_directories(c PRIVATE 
-"${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
-"${CMAKE_CURRENT_SOURCE_DIR}/include"
-"${CMAKE_SOURCE_DIR}/kernel/include"
-)
+cmake_minimum_required(VERSION 3.18)
 
-#ZZZ: there's a mismash of .a and .lib suffixes being generated and this is probably not really the right way of fixing that....
-# can it be set globally?
-# set_target_properties(c PROPERTIES SUFFIX ".lib")
+project (josrt C)
+
+include(cmake/josrt.cmake)

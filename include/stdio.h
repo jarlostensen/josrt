@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include "../internal/include/_file.h"
+#include "../src/internal/include/_file.h"
 
 extern int swprintf(wchar_t* __restrict buffer, size_t sizeOfBuffer, const wchar_t* __restrict format, ...);
 extern int snprintf(char* __restrict buffer, size_t sizeOfBuffer, const char* __restrict format, ...);

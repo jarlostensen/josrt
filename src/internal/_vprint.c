@@ -9,7 +9,7 @@
 #define EOF (int)(-1)
 #endif 
 
-#include "include\_vprint.h"
+#include "include/_vprint.h"
 
 //ZZZ: this include file issue needs tidying!
 #define _JOS_ASSERT(cond)

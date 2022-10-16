@@ -5,12 +5,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#include <output_console.h>
 #include "../internal/include/_vprint.h"
-
-#ifndef _JOS_KERNEL_BUILD
-#include <intrin.h>
-#endif
 
 // ================================================================================================================
 
@@ -26,7 +21,7 @@ static void console_flush(void* ctx)
 	printf_ctx_t* printf_ctx = (printf_ctx_t*)ctx;
 	if (printf_ctx->_wp)
 	{
-		output_console_output_string_a(printf_ctx->_line);
+		//output_console_output_string_a(printf_ctx->_line);
 		//ZZZ:output_console_flush(&_stdout);
 		printf_ctx->_wp = 0;
 	}
