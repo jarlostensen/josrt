@@ -5,7 +5,7 @@
 #include <wchar.h>
 #include <stdarg.h>
 
-#ifndef _JOS_KERNEL_BUILD
+#ifndef _JOSRT_KERNEL_BUILD
 #define EOF (int)(-1)
 #endif 
 

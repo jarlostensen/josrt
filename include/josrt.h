@@ -128,9 +128,13 @@ typedef struct _rect {
 
 
 #if defined(__llvm__)
+//TODO: TEMPORARY, this should really be something else (barebones?)
+    #define _JOSRT_KERNEL_BUILD        
     #include <toolchain/llvm.h>
+    #define _JOSRT_TOOLCHAIN_CLANG
 #elif defined(__GNUC__) || (defined(_LINKER) && defined(__GCC_LINKER_CMD__))
     #include "toolchain/gcc.h"
+    #define _JOSRT_TOOLCHAIN_GCC
 #else
     //TODO: VisualStudio
     #error "Invalid/unknown toolchain configuration"

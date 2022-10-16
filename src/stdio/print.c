@@ -58,7 +58,7 @@ static int console_putchar(void* ctx, int c) {
 	return 1;
 }
 
-extern int _JOS_LIBC_FUNC_NAME(printf)(const char* __restrict format, ...)
+extern int printf(const char* __restrict format, ...)
 {
 	va_list parameters;
 	va_start(parameters, format);
@@ -73,8 +73,8 @@ extern int _JOS_LIBC_FUNC_NAME(printf)(const char* __restrict format, ...)
 	return count;
 }
 
-int _JOS_LIBC_FUNC_NAME(puts)(const char* string) {
-	return _JOS_LIBC_FUNC_NAME(printf)("%s\n", string);
+int puts(const char* string) {
+	return printf("%s\n", string);
 }
 
 // ================================================================================================================

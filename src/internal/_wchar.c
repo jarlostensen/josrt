@@ -2,7 +2,7 @@
 #include <wchar.h>
 #include "include/libc_internal.h"
 
-size_t _JOS_LIBC_FUNC_NAME(wcslen)( const wchar_t *str )
+size_t wcslen( const wchar_t *str )
 {
 	if( !str || str[0]==0 )
 		return 0;

@@ -117,10 +117,10 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 			return written;
 		}
 
-#ifdef _JOS_KERNEL_BUILD
+#if defined(_JOSRT_TOOLCHAIN_CLANG) || defined(_JOSRT_TOOLCHAIN_GCC)
 		unsigned long d_width;
 		(d_width = 63 - __builtin_clzll(d), ++d_width);
-#else
+#else //TODO: check if it's WINDOWS and VS
 		unsigned long d_width;
 		(_BitScanReverse64(&d_width, d), ++d_width);
 #endif
@@ -806,12 +806,12 @@ static int buffer_putchar_count(void* ctx_, int c)
 #undef BUFFER_PRINT_CONVERT
 
 #ifdef WIDECHAR
-#define SXPRINTF	_JOS_LIBC_FUNC_NAME(swprintf)
-#define VSXPRINTF	_JOS_LIBC_FUNC_NAME(vswprintf)
+#define SXPRINTF	swprintf
+#define VSXPRINTF	vswprintf
 #define BUFFER_PRINT_CONVERT buffer_print_a_to_w
 #else
-#define SXPRINTF	_JOS_LIBC_FUNC_NAME(snprintf)
-#define VSXPRINTF	_JOS_LIBC_FUNC_NAME(vsnprintf)
+#define SXPRINTF	snprintf
+#define VSXPRINTF	vsnprintf
 #define BUFFER_PRINT_CONVERT buffer_print_w_to_a
 #endif
 

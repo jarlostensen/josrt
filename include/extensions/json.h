@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <jos.h>
-#ifdef _JOS_KERNEL_BUILD
+#ifdef _JOSRT_KERNEL_BUILD
 #include <extensions/slices.h>
 #else
 #include <slices.h>

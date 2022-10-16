@@ -1,5 +1,5 @@
 
-#ifdef _JOS_KERNEL_BUILD
+#ifdef _JOSRT_KERNEL_BUILD
 #include <jos.h>
 #include <collections.h>
 #include <extensions/slices.h>
