@@ -4,6 +4,7 @@ section .text
 extern main
 extern __libc_start_main
 
+;; also https://wiki.osdev.org/Creating_a_C_Library
 global _start:function (_start.end - _start)
 _start:
     xor        ebp,ebp
