@@ -22,7 +22,9 @@ target_sources(josrt PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_toupper.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_tolower.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_isupper.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_islower.c"    
+    "${CMAKE_CURRENT_SOURCE_DIR}/internal/_islower.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
 )
 target_include_directories(josrt PRIVATE 
 "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"

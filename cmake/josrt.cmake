@@ -23,10 +23,22 @@ message(STATUS "Target CPU ${ARCH}")
 set(TRIPLE "${ARCH}-pc-linux-elf")
 set(CMAKE_C_COMPILER_TARGET ${TRIPLE})
 message(STATUS "Target triple ${TRIPLE}")
+
+
+#############################################################################
+# NASM 
+enable_language(ASM_NASM)
+if(CMAKE_ASM_NASM_COMPILER_LOADED)
+  set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS "asm;nasm;S")
+  set(CAN_USE_ASSEMBLER TRUE)
+  #NOTE: all of the below is needed to force CMake+NASM to output win64 COFF object files.
+  #set(CMAKE_ASM_NASM_OBJECT_FORMAT win64)  
+  set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>")
+endif(CMAKE_ASM_NASM_COMPILER_LOADED)
+
 set(CMAKE_SKIP_RPATH ON)
 set(BUILD_SHARED_LIBRARIES OFF)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-
 set(ISYSROOT ${CMAKE_SOURCE_DIR}/include)
 
 set(CMAKE_CROSSCOMPILING TRUE)
@@ -46,6 +58,7 @@ else()
   message(FATAL_ERROR "unsupported compiler ${CMAKE_C_COMPILER_ID}")
 endif()
 
+
 add_library(josrt STATIC "")
 target_compile_options(josrt PRIVATE "${COMPILER_FLAGS}")
 target_include_directories(josrt PRIVATE
@@ -63,6 +76,6 @@ function(josrt_add_executable NAME)
   )
   
   target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt)
-  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS})
+  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS} -g)
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
 endfunction()
