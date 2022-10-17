@@ -24,12 +24,15 @@ target_sources(josrt PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_isupper.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_islower.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crti.asm"
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crtn.asm"
 )
+
 target_include_directories(josrt PRIVATE 
 "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+
+add_library(crt STATIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
+    "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
 )
