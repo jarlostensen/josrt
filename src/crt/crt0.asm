@@ -1,8 +1,10 @@
 section .text
 [bits 64]
 
-extern main
 extern __libc_start_main
+extern main
+;; hook provided by application 
+extern __exit
 
 ;; also https://wiki.osdev.org/Creating_a_C_Library
 global _start:function (_start.end - _start)
@@ -18,6 +20,6 @@ _start:
     xor        ecx,ecx
     lea        rdi,[main]
     call       __libc_start_main
-    hlt
+    call       __exit
 .end:
 

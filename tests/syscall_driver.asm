@@ -11,10 +11,10 @@ _syscall_write:
     syscall
     ret
 
-global _syscall_exit:function
-;; void _syscall_exit(void);
-_syscall_exit:
+global __exit:function
+;; this function is used by __libc_main
+;; void __exit(int);
+__exit:
     mov rax, 0x3c
-    xor rdi, rdi
     syscall
 
