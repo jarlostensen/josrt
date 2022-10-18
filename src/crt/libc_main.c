@@ -1,6 +1,9 @@
 
+// hook implemented by user
+extern void __exit(int);
+
 // see https://hammertux.github.io/libc-start 
-int __libc_start_main(int *(main) (int, char * *),
+void __libc_start_main(int *(main) (int, char * *),
 					  int argc,
 					  char * * ubp_av,
 					  void (*init) (void),
@@ -9,5 +12,5 @@ int __libc_start_main(int *(main) (int, char * *),
 					  void (* stack_end)) {
 
     main(1,0);
-    return 0;
+    __exit(0);
 }
