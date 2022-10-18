@@ -10,10 +10,7 @@
     #define ASM_SYNTAX_INTEL
 #endif
 
-#if defined(_JO_BARE_METAL_BUILD) && !defined(_JOSRT_KERNEL_BUILD)
-// for backwards compatibility
-#define _JOSRT_KERNEL_BUILD
-#endif
+// #define _JOSRT_KERNEL_BUILD for bare bones build (this will also remove some libc functionality)
 
 // ======================================================
 // Allocator interfaces
@@ -126,10 +123,7 @@ typedef struct _rect {
     size_t      right;
 } rect_t;
 
-
-#if defined(__llvm__)
-//TODO: TEMPORARY, this should really be something else (barebones?)
-    #define _JOSRT_KERNEL_BUILD        
+#if defined(__llvm__)    
     #include <toolchain/llvm.h>
     #define _JOSRT_TOOLCHAIN_CLANG
 #elif defined(__GNUC__) || (defined(_LINKER) && defined(__GCC_LINKER_CMD__))
@@ -141,106 +135,28 @@ typedef struct _rect {
 #endif
 
 #define _JOSRT_SWAP(a,b)\
-(a) ^= (b);\
-(b) ^= (a); \
-(a) ^= (b)
+    (a) ^= (b);\
+    (b) ^= (a); \
+    (a) ^= (b)
 #if !defined(__clang__)
-#define _JOSRT_SWAP_PTR(a,b)\
-((uintptr_t)(a)) ^= ((uintptr_t)(b));\
-((uintptr_t)(b)) ^= ((uintptr_t)(a));\
-((uintptr_t)(a)) ^= ((uintptr_t)(b))
+    #define _JOSRT_SWAP_PTR(a,b)\
+    ((uintptr_t)(a)) ^= ((uintptr_t)(b));\
+    ((uintptr_t)(b)) ^= ((uintptr_t)(a));\
+    ((uintptr_t)(a)) ^= ((uintptr_t)(b))
 #endif
 
- #define _JOSRT_MAX(a,b) \
-   ({ __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a > _b ? _a : _b; })
-#undef max
+#ifndef max
 #define max(a,b)\
     ((a) > (b) ? (a) : (b))
-
-
-#ifdef _JOSRT_KERNEL_BUILD
-
-#define _JOSRT_MAYBE_UNUSED __attribute__((unused))
-#define _JOSRT_INLINE_FUNC __attribute__((unused)) static
-#define _JOSRT_API_FUNC extern
-#define _JOSRT_ALWAYS_INLINE __attribute__((always_inline))
-
-#define _JOSRT_PACKED_ __attribute((packed))
-#define _JOSRT_UNREACHABLE() __builtin_unreachable()
-
-void trace(const char* channel, const char* msg,...);
-#define _JOSRT_KTRACE_CHANNEL(channel, msg, ...) trace(channel, msg, ##__VA_ARGS__)
-#define _JOSRT_KTRACE(msg, ...)  trace(0, msg, ##__VA_ARGS__)
-
-void trace_buf(const char* channel, const void* data, size_t length);
-#define _JOSRT_KTRACE_CHANNEL_BUF(channel, data,length) trace_buf(channel, data, length)
-#define _JOSRT_KTRACE_BUF(data,length) trace_buf(0, data, length)
-
-#define _JOSRT_BOCHS_DBGBREAK() asm volatile ("xchg %bx,%bx")
-#define _JOSRT_GDB_DBGBREAK() __asm__ volatile ("int $03")
-
-#define _JOSRT_BOCHS_DBGBREAK_TRACE()\
-trace(0, "break at %s:%d\n", __FILE__,__LINE__);\
-asm volatile ("xchg %bx,%bx")
-
-#define _JOSRT_ASSERT_COND(cond) #cond
-#define _JOSRT_ASSERT(cond)\
-if(!(cond))\
-{\
-    if ( !debugger_is_connected() ) {\
-        trace(0, "assert %s, %s:%d \n", _JOSRT_ASSERT_COND(cond), __FILE__,__LINE__);\
-        _JOSRT_GDB_DBGBREAK();\
-    }\
-    else {\
-        debugger_trigger_assert(_JOSRT_ASSERT_COND(cond), __FILE__, __LINE__);\
-    }\
-}
-
-#define _JOSRT_ALIGNED_TYPE(type,name,alignment) type name __attribute__ ((aligned (alignment)))
-
-#define _JOSRT_PACKED __attribute__((packed))
-#define _JOSRT_NORETURN __attribute__((__noreturn__))
-
-#define _JOSRT_KERNEL_PANIC()\
-    trace(0, "PANIC @ %s:%d \n", __FILE__,__LINE__);\
-    k_panic()
-
+#endif
 #ifndef min
-#define min(a,b) ((a)<(b) ? (a) : (b))
+#define min(a,b)\
+    ((a) < (b) ? (a) : (b))
 #endif
 
-#else
-//TODO: check if this is actually VS, but we're assuming it because we're in control...
-#define _JOSRT_UNREACHABLE()
-#define _JOSRT_MAYBE_UNUSED
-#define _JOSRT_INLINE_FUNC static
+#define _JOSRT_MAYBE_UNUSED __unused
+#define _JOSRT_INLINE_FUNC __unused static
 #define _JOSRT_API_FUNC extern
-#define _JOSRT_BOCHS_DBGBREAK() __debugbreak()
-
-#define _JOSRT_KTRACE_CHANNEL(channel, msg,...)
-#define _JOSRT_KTRACE(msg,...)
-#define _JOSRT_KTRACE_CHANNEL_BUF(channel, data,length)
-#define _JOSRT_KTRACE_BUF(data,length)
-
-#define _JOSRT_ALWAYS_INLINE
-
-#define _JOSRT_BOCHS_DBGBREAK_TRACE() __debugbreak()
-#define _JOSRT_GDB_DBGBREAK() __debugbreak()
-
-#define _JOSRT_PACKED_
-#define _JOSRT_NORETURN
-
-#define _JOSRT_KERNEL_PANIC()
-
-#ifdef _DEBUG
-#define _JOSRT_ASSERT(cond) if(!(cond)) { __debugbreak(); }
-#else
-#define _JOSRT_ASSERT(cond)
-#endif
-#define _JOSRT_ALIGNED_TYPE(type, name, alignment) __declspec(align(alignment)) type name
-#endif
 
 #define _JOSRT_PTR_IS_ALIGNED(ptr, alignment)\
     (((uintptr_t)ptr & ((uintptr_t)alignment - 1)) == 0)

@@ -25,7 +25,7 @@
 #define TOOLCHAIN_HAS_C_AUTO_TYPE 1
 #endif
 
-//TODO: #include <toolchain/gcc.h>
+#include "gcc.h"
 
 
 #endif /* ZEPHYR_INCLUDE_TOOLCHAIN_LLVM_H_ */
