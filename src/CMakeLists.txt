@@ -36,3 +36,8 @@ add_library(crt STATIC
     "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
     "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
 )
+
+target_include_directories(crt PRIVATE 
+"${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
+"${CMAKE_SOURCE_DIR}/include"
+)
