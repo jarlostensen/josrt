@@ -39,12 +39,7 @@
 #define BUILD_ASSERT(EXPR, MSG...)
 #endif
 
-
-#ifdef __cplusplus
-#define RESTRICT __restrict
-#else
 #define RESTRICT restrict
-#endif
 
 #include <stdbool.h>
 
