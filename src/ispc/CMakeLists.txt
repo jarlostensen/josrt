@@ -5,11 +5,5 @@ set (TARGET_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/memcpy.ispc
 )
 
-set( ISPC_ARCH "x86-64")
-set (ISPC_FLAGS "-O2 --pic")
-set (ISPC_IA_TARGETS "sse4")
-set(ISPC_TARGETS ${ISPC_IA_TARGETS})
-#TODO: this doesn't work
-set(CMAKE_ISPC_FLAGS "${ISPC_FLAGS} --target=${ISPC_TARGETS} --arch=${ISPC_ARCH}")
-
+target_compile_options(josrt_ispc PRIVATE -O2 --pic --target=sse4-i32x4 --arch=x86-64)
 target_sources(josrt_ispc PRIVATE ${TARGET_SOURCES})
