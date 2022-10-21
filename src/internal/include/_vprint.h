@@ -3,12 +3,12 @@
 #include "libc_internal.h"
 #include "_file.h"
 
-#define _PRINTF_FILE_LINE_LENGTH 256
 typedef struct _printf_file_tag
 {
 	__FILE _f;
-	char    _line[_PRINTF_FILE_LINE_LENGTH];
-	size_t	_wp;
+	char*	_buffer;
+	char* 	_wp;
+	const char* _end;
 
 } _printf_file_t;
 

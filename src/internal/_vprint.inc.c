@@ -502,7 +502,7 @@ int _vfprint_impl(FILE* f, const CHAR* RESTRICT format, va_list parameters)
 
 // ====================================================================================================================
 
-#define _PRINTF_FILE_BUFFER_REM(f) (_PRINTF_FILE_LINE_LENGTH - (f)->_wp)
+#define _PRINTF_FILE_BUFFER_REM(f) (size_t)(((f)->_end) - (f)->_wp)
 
 static int buffer_putchar_a(_printf_file_t* f, int c)
 {
@@ -511,7 +511,7 @@ static int buffer_putchar_a(_printf_file_t* f, int c)
 	{
 		return EOF;
 	}
-	f->_line[f->_wp++] = (char)c;
+	*f->_wp++ = (char)c;
 	return 1;
 }
 
@@ -542,7 +542,7 @@ static int buffer_print_a(FILE* f_, const char* data, size_t length)
 			}
 			// expand tabs to four spaces because It Is The Law
 			static const char kTab[4] = {' ',' ',' ',' '};
-			memcpy(f->_line + f->_wp, kTab, sizeof(kTab));
+			memcpy(f->_wp, kTab, sizeof(kTab));
 			f->_wp += 4;
 			written+=4;
 		}
@@ -554,12 +554,12 @@ static int buffer_print_a(FILE* f_, const char* data, size_t length)
 			{\
 				return EOF;\
 			}\
-			*(f->_line + f->_wp++) = c;\
+			*f->_wp++ = c;\
 			++written;\
 			break
 		_JOS_ESCAPED_CHAR_A('\"','"');
 		default:
-			*(f->_line + f->_wp++) = wc;
+			*f->_wp++ = wc;
 			++written;
 			break;
 		}
@@ -582,7 +582,9 @@ int VSXPRINTF(CHAR* RESTRICT buffer, size_t bufsz, const CHAR* RESTRICT format, 
 	int written = _vfprint_impl((FILE*)(&(_printf_file_t) {
 		._f._fd = -1,
 		._f.write = bufsz ? buffer_print_a : buffer_print_count_a,
-		._wp = 0
+		._wp = buffer,
+		._buffer = buffer,
+		._end = buffer + bufsz
 	}),
 	format, parameters);
 	buffer[written] = 0;
