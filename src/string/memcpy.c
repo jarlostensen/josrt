@@ -1,14 +1,14 @@
 #include <string.h>
 #include <stdint.h>
+#include <josrt.h>
 
-// https://github.com/nadavrot/memset_benchmark/tree/main/src
+void* memcpy(void* RESTRICT dstptr, const void* RESTRICT srcptr, size_t size) {
 
-void* memcpy(void* restrict dstptr, const void* restrict srcptr, size_t size) {
-
-	uint32_t* dst = (uint32_t*) dstptr;
-	size_t rem = size & 3;
-	size >>= 2;
-	uint32_t* src = (uint32_t*)srcptr;
+	//NOTE: 64 bit only!
+	uint64_t* dst = (uint64_t*) dstptr;
+	size_t rem = size & 7;
+	size >>= 3;
+	const uint64_t* src = (uint64_t*)srcptr;
 	for(size_t n = 0; n < size; ++n)
 		*dst++ = *src++;
 	unsigned char* cdst = (unsigned char*) dst;

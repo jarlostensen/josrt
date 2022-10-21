@@ -67,6 +67,12 @@ target_include_directories(josrt PRIVATE
   )
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
+if (_JOSRT_ISPC)
+  add_library(josrt_ispc STATIC "")
+  add_subdirectory(src/ispc)
+endif()
+
+################################################# TESTING
 
 function(josrt_add_executable NAME)
   set(ELF_TARGET_NAME ${NAME})
@@ -76,7 +82,7 @@ function(josrt_add_executable NAME)
   ${jobase_SOURCE_DIR}
   )
   
-  target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
+  target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt josrt_ispc)
   target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS} -g)
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
 endfunction()

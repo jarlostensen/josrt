@@ -1,6 +1,12 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.22)
 
-project (josrt C)
+if (_JOSRT_ISPC)
+    set(ENABLED_LANGUAGES C ISPC)
+elseif()
+    set(ENABLED_LANGUAGES C)
+endif()
+
+project (josrt ${ENABLED_LANGUAGES})
 
 include(cmake/josrt.cmake)
 
