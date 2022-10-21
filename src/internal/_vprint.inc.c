@@ -3,61 +3,36 @@
 // NOTE: this file is included by _vprint.c
 // it contains code that is part macro unrolled and part hand rolled
 // to generate wchar and char versions of various stdio string routines
-// 
-// Here be dragons.
 //
 
-#undef CHAR
-#undef DUAL_CHAR
-#undef __TEXT
-#undef WA_NAME
-#undef DUAL_WA_NAME
-#undef STRLEN
-#undef DUAL_STRLEN
-#undef A_NAME
-#undef W_NAME
-#undef WA
 
-#ifdef WIDECHAR
-#define WA w
-#define CHAR wchar_t
-#define DUAL_CHAR char
-#define STRLEN wcslen
-#define DUAL_STRLEN strlen
-#define __TEXT(s) L##s
-#define WA_NAME(name) name##_w
-#define DUAL_WA_NAME(name) name##_a
-#define W_NAME(name) WA_NAME(name)
-#define A_NAME(name) DUAL_WA_NAME(name)
-#else
-#define WA a
-#undef CHAR
-#define CHAR char
-#define DUAL_CHAR wchar_t
-#define STRLEN strlen
-#define DUAL_STRLEN wcslen
-#define __TEXT(s) s
-#define WA_NAME(name) name##_a
-#define DUAL_WA_NAME(name) name##_w
-#define A_NAME(name) WA_NAME(name)
-#define W_NAME(name) DUAL_WA_NAME(name)
-#endif
-#define TEXT(s) __TEXT(s)
+#include "include/_vprint.h"
 
+/* ***************************************************************
+   NOTE: the wide versions of functions are NOT used at the moment
+*/
 
-static int WA_NAME(printdecimal)(_vprint_ctx_t* ctx, long long d, int un_signed)
+static int _foutc(FILE* f, const char c) {
+    return f->write(f, (const char*)(&c), 1);
+}
+
+static int _fout(FILE* f, const char* s, size_t l) {
+    return f->write(f, s, l);
+}
+
+static int _fprintdecimal(FILE* f, long long d, int un_signed)
 {
 	int written = 0;
 	if (!d)
 	{
-		return ctx->_putchar(ctx->_that, (int)TEXT('0'));
+		return _foutc(f, TEXT('0'));
 	}
 
 	if (d < 0)
 	{
 		if (!un_signed)
 		{
-			int res = ctx->_putchar(ctx->_that, (int)TEXT('-'));
+			int res = _foutc(f, TEXT('-'));
 			if (res == EOF)
 				return EOF;
 			++written;
@@ -78,7 +53,7 @@ static int WA_NAME(printdecimal)(_vprint_ctx_t* ctx, long long d, int un_signed)
 	// print digits from MSD to LSD
 	while (true)
 	{
-		int res = ctx->_putchar(ctx->_that, (int)TEXT('0') + (int)dd);
+		int res = _foutc(f, TEXT('0') + (int)dd);
 		if (res == EOF)
 			return EOF;
 		written+=res;
@@ -91,7 +66,7 @@ static int WA_NAME(printdecimal)(_vprint_ctx_t* ctx, long long d, int un_signed)
 	return written;
 }
 
-static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
+static int _fprinthex(FILE* f, int width, long long d)
 {
 	static const CHAR* kHexDigits = TEXT("0123456789abcdef");
 	int written = 0;
@@ -110,7 +85,7 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 			written += width;
 			while (width--)
 			{
-				int res = ctx->_putchar(ctx->_that, (int)TEXT('0'));
+				int res = _foutc(f, TEXT('0'));
 				if (res == EOF)
 					return EOF;
 			}
@@ -137,19 +112,19 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 		written += width;
 		while (width--)
 		{
-			int res = ctx->_putchar(ctx->_that, TEXT('0'));
+			int res = _foutc(f, TEXT('0'));
 			if (res == EOF)
 				return EOF;
 		}
 
 		if (d > 15)
 		{
-			int res = ctx->_putchar(ctx->_that, (int)kHexDigits[(d & 0xf0) >> 4]);
+			int res = _foutc(f, kHexDigits[(d & 0xf0) >> 4]);
 			if (res == EOF)
 				return EOF;
 			++written;
 		}
-		if (ctx->_putchar(ctx->_that, (int)kHexDigits[(d & 0xf)]) == EOF)
+		if (_foutc(f, kHexDigits[(d & 0xf)]) == EOF)
 			return EOF;
 		return written + 1;
 	}
@@ -159,7 +134,7 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 	written += width;
 	while (width--)
 	{
-		if (ctx->_putchar(ctx->_that, TEXT('0')) == EOF)
+		if (_foutc(f, TEXT('0')) == EOF)
 			return EOF;
 	}
 
@@ -179,8 +154,8 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 		//NOTE: this will always "pad" the output to an even number of nybbles
 		size_t lo = *chars & 0x0f;
 		size_t hi = (*chars & 0xf0) >> 4;
-		int res = ctx->_putchar(ctx->_that, (int)kHexDigits[hi]);
-		res = res == EOF || ctx->_putchar(ctx->_that, (int)kHexDigits[lo]);
+		int res = _foutc(f, kHexDigits[hi]);
+		res = res == EOF || _foutc(f, kHexDigits[lo]);
 		if (res == EOF)
 			return EOF;
 		written += 2;
@@ -191,7 +166,7 @@ static int WA_NAME(printhex)(_vprint_ctx_t* ctx, int width, long long d)
 	return written;
 }
 
-static int WA_NAME(printbin)(_vprint_ctx_t* ctx, unsigned long long d)
+static int _fprintbin(FILE* f, unsigned long long d)
 {
 	int written = 0;
 	unsigned long long dd = d;
@@ -205,7 +180,7 @@ static int WA_NAME(printbin)(_vprint_ctx_t* ctx, unsigned long long d)
 	{
 		unsigned long dc = d & (1ull << (bc - 1));
 		dc >>= (bc - 1);
-		if (ctx->_putchar(ctx->_that, (int)TEXT('0' + (int)dc)) == EOF)
+		if (_foutc(f, TEXT('0' + (int)dc)) == EOF)
 			return EOF;
 		--bc;
 		++written;
@@ -213,7 +188,7 @@ static int WA_NAME(printbin)(_vprint_ctx_t* ctx, unsigned long long d)
 	return written;
 }
 
-int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_list parameters)
+int _vfprint_impl(FILE* f, const CHAR* RESTRICT format, va_list parameters)
 {
 	int written = 0;
 
@@ -239,7 +214,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 				// TODO: Set errno to EOVERFLOW.
 				return -1;
 			}
-			int result = ctx->WA_NAME(_print)(ctx->_that, format, amount);
+			int result = _fout(f, format, amount);
 			if (result == EOF)
 			{
 				return EOF;
@@ -309,7 +284,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 			case TEXT('c'):
 			{
 				CHAR c = (CHAR)va_arg(parameters, int);
-				int result = ctx->WA_NAME(_print)(ctx->_that, &c, 1);
+				int result = _foutc(f, c);
 				if (result == EOF)
 					return EOF;
 				written++;
@@ -327,7 +302,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 				}
 				if (len)
 				{
-					int result = ctx->WA_NAME(_print)(ctx->_that, str, len);
+					int result = _fout(f, str, len);
 					if (result == EOF)
 					{
 						// TODO: Set errno to EOVERFLOW.
@@ -339,9 +314,10 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 			break;
 			case TEXT('S'):
 			{
-				const DUAL_CHAR* str = va_arg(parameters, const DUAL_CHAR*);
+				/* UNSUPPORTED widechar support: 
+				const CHAR* str = va_arg(parameters, const CHAR*);
 				//NOTE: this is *not* standard, supporting a width modifier for %s
-				size_t len = width ? (size_t)width : DUAL_STRLEN(str);
+				size_t len = width ? (size_t)width : STRLEN(str);
 				if (maxrem < len)
 				{
 					// TODO: Set errno to EOVERFLOW.
@@ -349,7 +325,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 				}
 				if (len)
 				{
-					int result = ctx->DUAL_WA_NAME(_print_convert)(ctx->_that, str, len);
+					int result = ctx->_print_convert(ctx->_that, str, len);
 					if (result == EOF)
 					{
 						// TODO: Set errno to EOVERFLOW.
@@ -357,6 +333,8 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					}
 					written += result;
 				}
+				*/
+				return EOF;
 			}
 			break;
 			case TEXT('d'):
@@ -368,18 +346,18 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					if (length[1] == TEXT('l'))
 					{
 						long long d = va_arg(parameters, long long);
-						res = WA_NAME(printdecimal)(ctx, d, 0);
+						res = _fprintdecimal(f, d, 0);
 					}
 					else
 					{
 						long d = va_arg(parameters, long);
-						res = WA_NAME(printdecimal)(ctx, d, 0);
+						res = _fprintdecimal(f, d, 0);
 					}
 				}
 				else
 				{
 					int d = va_arg(parameters, int);
-					res = WA_NAME(printdecimal)(ctx, d, 0);
+					res = _fprintdecimal(f, d, 0);
 				}
 				if (res == EOF)
 					return EOF;
@@ -394,18 +372,18 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					if (length[1] == TEXT('l'))
 					{
 						unsigned long long d = va_arg(parameters, unsigned long long);
-						res = WA_NAME(printdecimal)(ctx, d, 1);
+						res = _fprintdecimal(f, d, 1);
 					}
 					else
 					{
 						unsigned long d = va_arg(parameters, unsigned long);
-						res = WA_NAME(printdecimal)(ctx, d, 1);
+						res = _fprintdecimal(f, d, 1);
 					}
 				}
 				else
 				{
 					unsigned int d = va_arg(parameters, unsigned int);
-					res = WA_NAME(printdecimal)(ctx, d, 1);
+					res = _fprintdecimal(f, d, 1);
 				}
 				if (res == EOF)
 					return EOF;
@@ -420,18 +398,18 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					if (length[1] == TEXT('l'))
 					{
 						unsigned long long d = va_arg(parameters, unsigned long long);
-						res = WA_NAME(printhex)(ctx, width, d);
+						res = _fprinthex(f, width, d);
 					}
 					else
 					{
 						unsigned long d = va_arg(parameters, unsigned long);
-						res = WA_NAME(printhex)(ctx, width, d);
+						res = _fprinthex(f, width, d);
 					}
 				}
 				else
 				{
 					unsigned int d = va_arg(parameters, unsigned int);
-					res = WA_NAME(printhex)(ctx, width, d);
+					res = _fprinthex(f, width, d);
 				}
 				if (res == EOF)
 					return EOF;
@@ -448,18 +426,18 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					if (length[1] == TEXT('l'))
 					{
 						unsigned long long d = va_arg(parameters, unsigned long long);
-						res = WA_NAME(printbin)(ctx, d);
+						res = _fprintbin(f, d);
 					}
 					else
 					{
 						unsigned long d = va_arg(parameters, unsigned long);
-						res = WA_NAME(printbin)(ctx, d);
+						res = _fprintbin(f, d);
 					}
 				}
 				else
 				{
 					unsigned int d = va_arg(parameters, unsigned int);
-					res = WA_NAME(printbin)(ctx, d);
+					res = _fprintbin(f, d);
 				}
 				if (res == EOF)
 					return EOF;
@@ -469,17 +447,17 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 			// -----------------------------------------
 			case TEXT('f'):
 			{
-				const float f = (float)va_arg(parameters, double);
-				int integral_part = (int)f;
-				float fractional_part = f - (float)integral_part;
-				int res = WA_NAME(printdecimal)(ctx, (long long)integral_part, 0);
+				const float ff = (float)va_arg(parameters, double);
+				int integral_part = (int)ff;
+				float fractional_part = ff - (float)integral_part;
+				int res = _fprintdecimal(f, (long long)integral_part, 0);
 				if (res == EOF)
 					return EOF;
 				written += res;
 				if (fractional_part != 0.0f && precision)
 				{
 					static CHAR c = TEXT('.');
-					res = ctx->WA_NAME(_print)(ctx->_that, &c, 1);
+					res = _foutc(f, c);
 					if (res == EOF)
 						return EOF;
 					++written;
@@ -487,7 +465,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					do
 					{
 						fractional_part *= 10.0f;
-						res = WA_NAME(printdecimal)(ctx, (long long)fractional_part, 0);
+						res = _fprintdecimal(f, (long long)fractional_part, 0);
 						if (res == EOF)
 							return EOF;
 						written += res;
@@ -505,7 +483,7 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 					// TODO: Set errno to EOVERFLOW.
 					return EOF;
 				}
-				int res = ctx->WA_NAME(_print)(ctx->_that, format, len);
+				int res = _fout(f, format, len);
 				if (res == EOF)
 					return EOF;
 				written += res;
@@ -516,66 +494,31 @@ int WA_NAME(_vprint_impl)(_vprint_ctx_t* ctx, const CHAR* __restrict format, va_
 		}
 	}
 
-	if (ctx->_flush)
-		ctx->_flush(ctx->_that);
+	if (f->flush)
+		f->flush(f);
 
 	return written;
 }
 
 // ====================================================================================================================
 
-#ifndef _BUFFER_HELPERS_DEFINED
+#define _PRINTF_FILE_BUFFER_REM(f) (_PRINTF_FILE_LINE_LENGTH - (f)->_wp)
 
-typedef struct _buffer_a
+static int buffer_putchar_a(_printf_file_t* f, int c)
 {
-	char* _wp;
-	const char* _end;
-} buffer_t_a;
-
-typedef struct _buffer_w
-{
-	wchar_t* _wp;
-	const wchar_t* _end;
-} buffer_t_w;
-
-//NOTE: this is clunky but there isn't a nice way to wrap this in macros (and macros are rubbish for debugging anyway)
-
-static size_t buffer_characters_left_a(buffer_t_a* buffer)
-{
-	return ((size_t)buffer->_end - (size_t)buffer->_wp) / sizeof(char);
-}
-static size_t buffer_characters_left_w(buffer_t_w* buffer)
-{
-	return ((size_t)buffer->_end - (size_t)buffer->_wp) / sizeof(wchar_t);
-}
-
-static int buffer_putchar_a(void* ctx_, int c)
-{
-	buffer_t_a* ctx = (buffer_t_a*)ctx_;
-	const size_t rem_chars = buffer_characters_left_a(ctx);
+	const size_t rem_chars = _PRINTF_FILE_BUFFER_REM(f);
 	if (rem_chars == 1)
 	{
 		return EOF;
 	}
-	*ctx->_wp++ = (char)c;
-	return 1;
-}
-static int buffer_putchar_w(void* ctx_, int c)
-{
-	buffer_t_w* ctx = (buffer_t_w*)ctx_;
-	const size_t rem_chars = buffer_characters_left_w(ctx);
-	if (rem_chars == 1)
-	{
-		return EOF;
-	}
-	*ctx->_wp++ = (wchar_t)c;
+	f->_line[f->_wp++] = (char)c;
 	return 1;
 }
 
-static int buffer_print_a(void* ctx_, const char* data, size_t length)
+static int buffer_print_a(FILE* f_, const char* data, size_t length)
 {
-	buffer_t_a* ctx = (buffer_t_a*)ctx_;
-	const size_t rem_chars = buffer_characters_left_a(ctx);
+	_printf_file_t* f = (_printf_file_t*)f_;
+	const size_t rem_chars = _PRINTF_FILE_BUFFER_REM(f);
 	if (rem_chars < length + 1)
 	{
 		if (rem_chars == 1)
@@ -599,8 +542,8 @@ static int buffer_print_a(void* ctx_, const char* data, size_t length)
 			}
 			// expand tabs to four spaces because It Is The Law
 			static const char kTab[4] = {' ',' ',' ',' '};
-			memcpy(ctx->_wp, kTab, sizeof(kTab));
-			ctx->_wp += 4;
+			memcpy(f->_line + f->_wp, kTab, sizeof(kTab));
+			f->_wp += 4;
 			written+=4;
 		}
 		break;
@@ -611,166 +554,12 @@ static int buffer_print_a(void* ctx_, const char* data, size_t length)
 			{\
 				return EOF;\
 			}\
-			*ctx->_wp++ = c;\
+			*(f->_line + f->_wp++) = c;\
 			++written;\
 			break
 		_JOS_ESCAPED_CHAR_A('\"','"');
 		default:
-			*ctx->_wp++ = wc;
-			++written;
-			break;
-		}
-	}
-	return written;
-}
-//NOTE: the ackward naming is so that we can use the DUAL_WA_NAME macro below...
-static int buffer_print_a_to_w(void* ctx_, const char* data, size_t length)
-{
-	buffer_t_w* ctx = (buffer_t_w*)ctx_;
-	const size_t rem_chars = buffer_characters_left_w(ctx);
-	if (rem_chars < length + 1)
-	{
-		if (rem_chars == 1)
-		{
-			return EOF;
-		}
-		length = rem_chars - 1;
-	}
-	int written = 0;
-	for (unsigned i = 0; i < length; ++i)
-	{
-		char wc = data[i];
-		switch (wc)
-		{
-		case '\t':
-		{
-			if ((rem_chars-length) < 5)
-			{
-				// no more space
-				return EOF;
-			}
-			// expand tabs to four spaces because It Is The Law
-			static const wchar_t kTab[4] = {L' ',L' ',L' ',L' '};
-			memcpy(ctx->_wp, kTab, sizeof(kTab));
-			ctx->_wp += 4;
-			written+=4;
-		}
-		break;
-		//TODO: more of these, if we can be bothered...
-#define _JOS_ESCAPED_CHAR_A_TO_W(ec,c)\
-		case ec:\
-			if((rem_chars-length) < 2)\
-			{\
-				return EOF;\
-			}\
-			*ctx->_wp++ = c;\
-			++written;\
-			break
-        _JOS_ESCAPED_CHAR_A_TO_W('\"',L'"');
-		default:
-			*ctx->_wp++ = wc;
-			++written;
-			break;
-		}
-	}
-	return written;
-}
-static int buffer_print_w(void* ctx_, const wchar_t* data, size_t length)
-{
-	buffer_t_w* ctx = (buffer_t_w*)ctx_;
-	const size_t rem_chars = buffer_characters_left_w(ctx);
-	if (rem_chars < length + 1)
-	{
-		if (rem_chars == 1)
-		{
-			return EOF;
-		}
-		length = rem_chars - 1;
-	}
-	int written = 0;
-	for (unsigned i = 0; i < length; ++i)
-	{
-		wchar_t wc = data[i];
-		switch (wc)
-		{
-		case L'\t':
-		{
-			if ((rem_chars-length) < 5)
-			{
-				// no more space
-				return EOF;
-			}
-			// expand tabs to four spaces because It Is The Law
-			static const wchar_t kTab[4] = {L' ',L' ',L' ',L' '};
-			memcpy(ctx->_wp, kTab, sizeof(kTab));
-			ctx->_wp += 4;
-			written+=4;
-		}
-		break;
-		//TODO: more of these, if we can be bothered...
-#define _JOS_ESCAPED_CHAR_W(ec,c)\
-		case ec:\
-			if((rem_chars-length) < 2)\
-			{\
-				return EOF;\
-			}\
-			*ctx->_wp++ = c;\
-			++written;\
-			break
-		_JOS_ESCAPED_CHAR_W(L'\"',L'"');
-		default:
-			*ctx->_wp++ = wc;
-			++written;
-			break;
-		}
-	}
-	return written;
-}
-static int buffer_print_w_to_a(void* ctx_, const wchar_t* data, size_t length)
-{
-	buffer_t_a* ctx = (buffer_t_a*)ctx_;
-	const size_t rem_chars = buffer_characters_left_a(ctx);
-	if (rem_chars < length + 1)
-	{
-		if (rem_chars == 1)
-		{
-			return EOF;
-		}
-		length = rem_chars - 1;
-	}
-	int written = 0;
-	for (unsigned i = 0; i < length; ++i)
-	{
-		wchar_t wc = data[i];
-		switch (wc)
-		{
-		case '\t':
-		{
-			if ((rem_chars-length) < 5)
-			{
-				// no more space
-				return EOF;
-			}
-			// expand tabs to four spaces because It Is The Law
-			static const char kTab[4] = {' ',' ',' ',' '};
-			memcpy(ctx->_wp, kTab, sizeof(kTab));
-			ctx->_wp += 4;
-			written+=4;
-		}
-		break;
-		//TODO: more of these, if we can be bothered...
-#define _JOS_ESCAPED_CHAR_W_TO_A(ec,c)\
-		case ec:\
-			if((rem_chars-length) < 2)\
-			{\
-				return EOF;\
-			}\
-			*ctx->_wp++ = c;\
-			++written;\
-			break
-		_JOS_ESCAPED_CHAR_W_TO_A(L'\"','"');
-		default:
-			*ctx->_wp++ = wc;
+			*(f->_line + f->_wp++) = wc;
 			++written;
 			break;
 		}
@@ -778,56 +567,24 @@ static int buffer_print_w_to_a(void* ctx_, const wchar_t* data, size_t length)
 	return written;
 }
 
-static int buffer_print_count_a(void* ctx_, const char* data, size_t length)
+static int buffer_print_count_a(FILE* f, const char* data, size_t length)
 {
-	(void)ctx_;
-	(void)data;
-	return (int)length;
-}
-static int buffer_print_count_w(void* ctx_, const wchar_t* data, size_t length)
-{
-	(void)ctx_;
+	(void)f;
 	(void)data;
 	return (int)length;
 }
 
-static int buffer_putchar_count(void* ctx_, int c)
-{
-	(void)ctx_;
-	(void)c;
-	return 1;
-}
-
-#define _BUFFER_HELPERS_DEFINED
-#endif
-
-#undef SXPRINTF
-#undef VSXPRINTF
-#undef BUFFER_PRINT_CONVERT
-
-#ifdef WIDECHAR
-#define SXPRINTF	swprintf
-#define VSXPRINTF	vswprintf
-#define BUFFER_PRINT_CONVERT buffer_print_a_to_w
-#else
 #define SXPRINTF	snprintf
 #define VSXPRINTF	vsnprintf
-#define BUFFER_PRINT_CONVERT buffer_print_w_to_a
-#endif
 
-int VSXPRINTF(CHAR* __restrict buffer, size_t bufsz, const CHAR* __restrict format, va_list parameters)
+int VSXPRINTF(CHAR* RESTRICT buffer, size_t bufsz, const CHAR* RESTRICT format, va_list parameters)
 {
-	if (!buffer || !format || !format[0])
-		return 0;
-
-	int written = WA_NAME(_vprint_impl)(&(_vprint_ctx_t) {
-		.WA_NAME(_print) = (bufsz ? WA_NAME(buffer_print) : WA_NAME(buffer_print_count)),
-		.DUAL_WA_NAME(_print) = (bufsz ? DUAL_WA_NAME(buffer_print) : DUAL_WA_NAME(buffer_print_count)),
-		.DUAL_WA_NAME(_print_convert) = (bufsz ? BUFFER_PRINT_CONVERT : DUAL_WA_NAME(buffer_print_count)),
-		._putchar = (bufsz ? WA_NAME(buffer_putchar) : buffer_putchar_count),
-		._that = (void*)&(WA_NAME(buffer_t)) { ._wp = buffer, ._end = buffer + bufsz }
-	},
-		format, parameters);
+	int written = _vfprint_impl((FILE*)(&(_printf_file_t) {
+		._f._fd = -1,
+		._f.write = bufsz ? buffer_print_a : buffer_print_count_a,
+		._wp = 0
+	}),
+	format, parameters);
 	buffer[written] = 0;
 	return written;	
 }

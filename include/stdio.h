@@ -7,21 +7,38 @@
 #include <stdint.h>
 #include <string.h>
 #include <wchar.h>
+#include <josrt.h>
 
-#ifdef __cplusplus
-extern "C" {
+extern int swprintf(wchar_t* RESTRICT buffer, size_t sizeOfBuffer, const wchar_t* RESTRICT format, ...);
+extern int snprintf(char* RESTRICT buffer, size_t sizeOfBuffer, const char* RESTRICT format, ...);
+extern int vswprintf(wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t * RESTRICT format, va_list vlist);
+extern int vsnprintf(char *RESTRICT buffer, size_t bufsz, const char * RESTRICT format, va_list parameters);
+extern int printf(const char* RESTRICT format, ...);
+
+typedef struct __FILE_TAG FILE;
+extern FILE *const stdin;
+extern FILE *const stdout;
+extern FILE *const stderr;
+
+#define stdin  (stdin)
+#define stdout (stdout)
+#define stderr (stderr)
+
+#ifdef _JOSRT_REQUIRES_FILE
+
+extern FILE *fopen(const char *RESTRICT, const char *RESTRICT);
+extern int fclose(FILE *);
+
+extern int feof(FILE *);
+extern int ferror(FILE *);
+extern int fflush(FILE *);
+extern void clearerr(FILE *);
+
+extern int fseek(FILE *, long, int);
+extern long ftell(FILE *);
+
+extern size_t fread(void *RESTRICT, size_t, size_t, FILE *RESTRICT);
+extern size_t fwrite(const void *RESTRICT, size_t, size_t, FILE *RESTRICT);
 #endif
 
-#include "../src/internal/include/_file.h"
-
-extern int swprintf(wchar_t* __restrict buffer, size_t sizeOfBuffer, const wchar_t* __restrict format, ...);
-extern int snprintf(char* __restrict buffer, size_t sizeOfBuffer, const char* __restrict format, ...);
-extern int vswprintf(wchar_t *__restrict buffer, size_t bufsz, const wchar_t * __restrict format, va_list vlist);
-extern int vsnprintf(char *__restrict buffer, size_t bufsz, const char * __restrict format, va_list parameters);
-extern int printf(const char* __restrict format, ...);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // _JOS
+#endif // _JOS_STDIO_H
