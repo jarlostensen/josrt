@@ -44,7 +44,7 @@ set(ISYSROOT ${CMAKE_SOURCE_DIR}/include)
 set(CMAKE_CROSSCOMPILING TRUE)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PREFIX_PATH  "${ISYSROOT}")
-set(COMPILER_CODEGEN_FLAGS -m64 ${WARNS})
+set(COMPILER_CODEGEN_FLAGS -m64 -msse3 ${WARNS})
 
 set(LINKER_FLAGS 
       -nostdlib
@@ -63,6 +63,7 @@ add_library(josrt STATIC "")
 target_compile_options(josrt PRIVATE "${COMPILER_FLAGS}")
 target_include_directories(josrt PRIVATE
   "${CMAKE_SYSTEM_PREFIX_PATH}"
+  "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
   ${jobase_SOURCE_DIR}
   )
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
@@ -79,6 +80,7 @@ function(josrt_add_executable NAME)
   add_executable(${ELF_TARGET_NAME} ${ARGN})
   target_include_directories(${ELF_TARGET_NAME} PRIVATE
   "${CMAKE_SYSTEM_PREFIX_PATH}"
+  "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
   ${jobase_SOURCE_DIR}
   )
   
