@@ -125,6 +125,7 @@ typedef struct _rect {
 
 #if defined(__llvm__)    
     #include <toolchain/llvm.h>
+    #include <x86intrin.h>
     #define _JOSRT_TOOLCHAIN_CLANG
 #elif defined(__GNUC__) || (defined(_LINKER) && defined(__GCC_LINKER_CMD__))
     #include "toolchain/gcc.h"
