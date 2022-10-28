@@ -31,8 +31,7 @@ enable_language(ASM_NASM)
 if(CMAKE_ASM_NASM_COMPILER_LOADED)
   set(CMAKE_ASM_NASM_SOURCE_FILE_EXTENSIONS "asm;nasm;S")
   set(CAN_USE_ASSEMBLER TRUE)
-  #NOTE: all of the below is needed to force CMake+NASM to output win64 COFF object files.
-  #set(CMAKE_ASM_NASM_OBJECT_FORMAT win64)  
+  set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)
   set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>")
 endif(CMAKE_ASM_NASM_COMPILER_LOADED)
 
@@ -55,7 +54,7 @@ set(LINKER_FLAGS
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
   set(COMPILER_FLAGS "${COMPILER_CODEGEN_FLAGS}" -target "${TRIPLE}" -nostdinc -ffreestanding -isystem "${ISYSROOT}")
 else()
-  message(FATAL_ERROR "unsupported compiler ${CMAKE_C_COMPILER_ID}")
+  message(FATAL_ERROR "(currently) unsupported toolchain ${CMAKE_C_COMPILER_ID}")
 endif()
 
 
@@ -76,7 +75,13 @@ endif()
 ################################################# TESTING
 
 function(josrt_add_executable NAME)
-  set(ELF_TARGET_NAME ${NAME})
+
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(ELF_TARGET_NAME ${NAME}d)
+  else()
+    set(ELF_TARGET_NAME ${NAME})
+  endif()
+  
   add_executable(${ELF_TARGET_NAME} ${ARGN})
   target_include_directories(${ELF_TARGET_NAME} PRIVATE
   "${CMAKE_SYSTEM_PREFIX_PATH}"
@@ -84,7 +89,11 @@ function(josrt_add_executable NAME)
   ${jobase_SOURCE_DIR}
   )
   
-  target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt josrt_ispc)
-  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS} -g)
+  if(_JOSRT_ISPC)
+    target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt josrt_ispc)
+  else()
+    target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
+  endif()
+  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS})
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
 endfunction()
