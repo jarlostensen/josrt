@@ -8,6 +8,7 @@ target_sources(josrt PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/stdio/print.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/extensions/slices.c"  
     "${CMAKE_CURRENT_SOURCE_DIR}/extensions/base64.c"  
+    "${CMAKE_CURRENT_SOURCE_DIR}/extensions/strlen.c"  
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_vprint.c"    
     "${CMAKE_CURRENT_SOURCE_DIR}/internal/_wchar.c"    
     "${CMAKE_CURRENT_SOURCE_DIR}/math/pow.c"

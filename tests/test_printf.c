@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <extensions/string.h>
 
 extern void _syscall_write(const char* str, int len);
 int sys_write(int fd, const char* data, size_t len) {
@@ -11,9 +12,11 @@ int sys_write(int fd, const char* data, size_t len) {
     return -1;
 }
 
-int main(int argc, char* argv[], char* envp[]) {
-    const char* message = "Hello, josrt!\n";
-    printf("%s", message);
+int main(int argc, char* argv[], char* envp[]) {    
+
+    const char* message = "Hello World from josrt!";
+    size_t len = strlen(message);
+    printf("%s (%d)\n", message, len);
 
     char buffer[1024];
     int result = snprintf(buffer, sizeof(buffer), "Hello, this is %s and a %d...", "snprintf", 42);
