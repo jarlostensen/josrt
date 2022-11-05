@@ -32,12 +32,14 @@ void __libc_start_main(int *(main) (int, char * *),
 		eax = 0x7;
 		ecx = 0;
 		__cpuid(0x7, eax, ebx, edx, ecx);
-		if ( !bit_AVX2 ) {
+		if ( ebx & bit_AVX2 ) {
+			//TODO: proper argc + argv
+			main(1,0);
+			exit_code = 0;
+		}
+		else {
 			printf("[__libc_start_main] unsupported HW; AVX2 not enabled\n");
 		}
-		//TODO: proper argc + argv
-		main(1,0);
-		exit_code = 0;
 	}
 	else {
 		printf("[__libc_start_main] unsupported HW; XMM/YMM not enabled\n");
