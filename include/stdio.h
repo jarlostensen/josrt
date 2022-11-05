@@ -6,12 +6,18 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
-#include <wchar.h>
+//TODO: genericise...
+#ifdef JOBASE_WCHAR_SUPPORT
+    #include <wchar.h>
+#endif
 #include <josrt.h>
 
+#ifdef JOBASE_WCHAR_SUPPORT
 extern int swprintf(wchar_t* RESTRICT buffer, size_t sizeOfBuffer, const wchar_t* RESTRICT format, ...);
-extern int snprintf(char* RESTRICT buffer, size_t sizeOfBuffer, const char* RESTRICT format, ...);
 extern int vswprintf(wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t * RESTRICT format, va_list vlist);
+#endif
+
+extern int snprintf(char* RESTRICT buffer, size_t sizeOfBuffer, const char* RESTRICT format, ...);
 extern int vsnprintf(char *RESTRICT buffer, size_t bufsz, const char * RESTRICT format, va_list parameters);
 extern int printf(const char* RESTRICT format, ...);
 
