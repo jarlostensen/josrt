@@ -29,7 +29,7 @@
 //
 #include <stdio.h>
 #include <string.h>
-#include <jos.h>
+#include <josrt.h>
 #ifdef _JOSRT_KERNEL_BUILD
 #include <extensions/slices.h>
 #else
@@ -45,12 +45,12 @@ typedef struct _json_context {
 	
 } json_writer_context_t;
 
-_JOS_API_FUNC void json_initialise_writer(json_writer_context_t* ctx, FILE* stream);
-_JOS_API_FUNC void json_write_object_start(json_writer_context_t* writer_ctx);
-_JOS_API_FUNC void json_write_object_end(json_writer_context_t* writer_ctx);
-_JOS_API_FUNC void json_write_key(json_writer_context_t* writer_ctx, const char* key_name);
-_JOS_API_FUNC void json_write_number(json_writer_context_t* writer_ctx, long long number);
-_JOS_API_FUNC void json_write_string(json_writer_context_t* writer_ctx, const char* str);
+_JOSRT_API_FUNC void json_initialise_writer(json_writer_context_t* ctx, FILE* stream);
+_JOSRT_API_FUNC void json_write_object_start(json_writer_context_t* writer_ctx);
+_JOSRT_API_FUNC void json_write_object_end(json_writer_context_t* writer_ctx);
+_JOSRT_API_FUNC void json_write_key(json_writer_context_t* writer_ctx, const char* key_name);
+_JOSRT_API_FUNC void json_write_number(json_writer_context_t* writer_ctx, long long number);
+_JOSRT_API_FUNC void json_write_string(json_writer_context_t* writer_ctx, const char* str);
 
 typedef enum json_token_type {
 
@@ -67,29 +67,29 @@ typedef struct _json_parse_token {
 	char_array_slice_t	_slice;
 } json_token_t;
 
-_JOS_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_array_slice_t in_json);
-_JOS_API_FUNC json_token_t json_value(vector_t* tokens, const char* key);
+_JOSRT_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_array_slice_t in_json);
+_JOSRT_API_FUNC json_token_t json_value(vector_t* tokens, const char* key);
 
 #if defined(_JOS_IMPLEMENT_JSON) && !defined(_JOS_JSON_IMPLEMENTED)
 #define _JOS_JSON_IMPLEMENTED
 
-_JOS_API_FUNC  void json_initialise_writer(json_writer_context_t* ctx, FILE* stream) {
+_JOSRT_API_FUNC  void json_initialise_writer(json_writer_context_t* ctx, FILE* stream) {
 	memset(ctx, 0, sizeof(json_writer_context_t));
 	ctx->_stream = stream;
 	ctx->_keys_added = 0;
 	ctx->_obj_has_key = false;
 }
 
-_JOS_API_FUNC void json_write_object_start(json_writer_context_t* writer_ctx) {
+_JOSRT_API_FUNC void json_write_object_start(json_writer_context_t* writer_ctx) {
 	fwrite("{ ", 1, 2, writer_ctx->_stream);
 	writer_ctx->_obj_has_key = false;
 }
 
-_JOS_API_FUNC void json_write_object_end(json_writer_context_t* writer_ctx) {
+_JOSRT_API_FUNC void json_write_object_end(json_writer_context_t* writer_ctx) {
 	fwrite(" }", 1, 2, writer_ctx->_stream);
 }
 
-_JOS_API_FUNC void json_write_key(json_writer_context_t* writer_ctx, const char* key_name) {
+_JOSRT_API_FUNC void json_write_key(json_writer_context_t* writer_ctx, const char* key_name) {
 	if (writer_ctx->_obj_has_key) {
 		fwrite(", ", 1, 2, writer_ctx->_stream);
 	}
@@ -101,13 +101,13 @@ _JOS_API_FUNC void json_write_key(json_writer_context_t* writer_ctx, const char*
 	fwrite(" : ", 1, 3, writer_ctx->_stream);
 }
 
-_JOS_API_FUNC void json_write_number(json_writer_context_t* writer_ctx, long long number) {
+_JOSRT_API_FUNC void json_write_number(json_writer_context_t* writer_ctx, long long number) {
 	char buffer[32];
 	int written = snprintf(buffer, sizeof(buffer), "%lld", number);
 	fwrite(buffer, 1, written, writer_ctx->_stream);
 }
 
-_JOS_API_FUNC void json_write_string(json_writer_context_t* writer_ctx, const char* str) {
+_JOSRT_API_FUNC void json_write_string(json_writer_context_t* writer_ctx, const char* str) {
 	fwrite("\"", 1, 1, writer_ctx->_stream);
 	fwrite(str, 1, strlen(str), writer_ctx->_stream);
 	fwrite("\"", 1, 1, writer_ctx->_stream);
@@ -126,7 +126,7 @@ typedef enum _json_parse_state {
 
 } _json_parse_state_t;
 
-_JOS_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_array_slice_t in_json) {
+_JOSRT_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_array_slice_t in_json) {
 	if (!in_json._length || !in_json._ptr)
 		return 0;
 
@@ -260,7 +260,7 @@ _JOS_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_ar
 	return ((json_token_t*)vector_at(in_out_token_slices, first_token));
 }
 
-_JOS_API_FUNC json_token_t json_value(vector_t* tokens, const char* key) {
+_JOSRT_API_FUNC json_token_t json_value(vector_t* tokens, const char* key) {
 
 	int is_key = 1;
 	bool found_key = false;

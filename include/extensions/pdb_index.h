@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <jos.h>
+#include <josrt.h>
 
 typedef struct _pdb_index_symbol {
     // rva of symbol relative to section
