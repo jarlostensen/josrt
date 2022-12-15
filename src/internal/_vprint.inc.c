@@ -13,11 +13,11 @@
 */
 
 static int _foutc(FILE* f, const char c) {
-    return f->write(f, (const char*)(&c), 1);
+    return f->_write(f, (const char*)(&c), 1);
 }
 
 static int _fout(FILE* f, const char* s, size_t l) {
-    return f->write(f, s, l);
+    return f->_write(f, s, l);
 }
 
 static int _fprintdecimal(FILE* f, long long d, int un_signed)
@@ -494,18 +494,27 @@ int _vfprint_impl(FILE* f, const CHAR* RESTRICT format, va_list parameters)
 		}
 	}
 
-	if (f->flush)
-		f->flush(f);
+	if (f->_flush)
+		f->_flush(f);
 
 	return written;
 }
 
 // ====================================================================================================================
 
+typedef struct _buffer_file {
+	FILE	_file;
+	char*  _buffer;
+	char*  _wp;
+	const char* _end;
+} _buffer_file_t;
+
+
 #define _PRINTF_FILE_BUFFER_REM(f) (size_t)(((f)->_end) - (f)->_wp)
 
-static int buffer_putchar_a(_printf_file_t* f, int c)
+static int buffer_putchar_a(FILE* ff, int c)
 {
+	_buffer_file_t* f = (_buffer_file_t*)ff;
 	const size_t rem_chars = _PRINTF_FILE_BUFFER_REM(f);
 	if (rem_chars == 1)
 	{
@@ -515,9 +524,9 @@ static int buffer_putchar_a(_printf_file_t* f, int c)
 	return 1;
 }
 
-static int buffer_print_a(FILE* f_, const char* data, size_t length)
+static int buffer_print_a(FILE* ff, const char* data, size_t length)
 {
-	_printf_file_t* f = (_printf_file_t*)f_;
+	_buffer_file_t* f = (_buffer_file_t*)ff;
 	const size_t rem_chars = _PRINTF_FILE_BUFFER_REM(f);
 	if (rem_chars < length + 1)
 	{
@@ -579,9 +588,9 @@ static int buffer_print_count_a(FILE* f, const char* data, size_t length)
 
 int VSXPRINTF(CHAR* RESTRICT buffer, size_t bufsz, const CHAR* RESTRICT format, va_list parameters)
 {
-	int written = _vfprint_impl((FILE*)(&(_printf_file_t) {
-		._f._fd = -1,
-		._f.write = bufsz ? buffer_print_a : buffer_print_count_a,
+	int written = _vfprint_impl((FILE*)(&(_buffer_file_t) {
+		._file._fd = -1,
+		._file._write = bufsz ? buffer_print_a : buffer_print_count_a,
 		._wp = buffer,
 		._buffer = buffer,
 		._end = buffer + bufsz

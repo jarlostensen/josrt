@@ -16,7 +16,7 @@ static int _stdout_write(FILE* f, const char* s, size_t l) {
 static FILE _stdout = {
 	._fd = 1,
 	._pos = 0,
-	.write = _stdout_write
+	._write = _stdout_write
 };
 
 extern int printf(const char* RESTRICT format, ...)

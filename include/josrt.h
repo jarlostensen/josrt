@@ -7,10 +7,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#if defined(__clang__) || defined(__GNUC__)
-    #define ASM_SYNTAX_ATNT    
-#else 
-    #define ASM_SYNTAX_INTEL
+#ifdef _JOSRT_BARE_BONES_BUILD
+    // no explicit FILE support
+    #undef _JOSRT_REQUIRES_FILE
+    // no other IO support (no stdout/stdin/stderr)
+    #undef _JOSRT_REQUIRES_IO
 #endif
 
 // #define _JOSRT_KERNEL_BUILD for bare bones build (this will also remove some libc functionality)
@@ -64,20 +65,16 @@ typedef struct _generic_allocator {
 
 } generic_allocator_t;
 
-// a static allocation policy means that memory will be allocated, but never freed.
-// the allocator can therefore be linear
-typedef struct _static_allocation_policy {
-    generic_allocator_t *   allocator;
-    // needed to prevent the compiler from implicitly casting this struct to an allocator*
-    bool                    __no_implicit_ptr_cast; 
-} static_allocation_policy_t;
+#define _JOSRT_ALLOCATOR_POLICY(name)\
+typedef struct _##name {\
+    generic_allocator_t *   allocator;\
+    int                    __force_no_implicit_ptr_cast;\
+} name##_t
 
-// a dynamic allocation policy requires an allocator that can free and reallocate memory
-typedef struct _dynamic_allocation_policy {
-    generic_allocator_t *   allocator;
-    // needed to prevent the compiler from implicitly casting this struct to an allocator*
-    bool                    __no_implicit_ptr_cast;
-} dynamic_allocation_policy_t;
+// allocator policy which supports allocation but no free or realloc
+_JOSRT_ALLOCATOR_POLICY(static_allocation_policy);
+// allocator policy which supports dynamic (general) allocation, free, and realloc
+_JOSRT_ALLOCATOR_POLICY(dynamic_allocation_policy);
 
 // =================================================================
 // page allocator interface

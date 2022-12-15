@@ -1,5 +1,5 @@
-#pragma once
-#include <internal/_file.h>
+#include <internal/include/_file.h>
+#include <josrt.h>
 
 /* FOR LATER
 #define _io_file_fromstring(f, s)\
@@ -14,7 +14,9 @@
     (f)->_pos += l
 */
 
-static int _fflush(IO_FILE* stream) {
+static generic_allocator_alloc_t* _file_handle_allocator;
+
+static int _fflush(__FILE* stream) {
     if (stream->_buffer._wp > stream->_buffer._begin) {
         stream->write(stream, stream->_buffer._begin, stream->_buffer._wp - stream->_buffer._begin);
         stream->_buffer._wp = stream->_buffer._begin;
@@ -22,7 +24,7 @@ static int _fflush(IO_FILE* stream) {
     return 0;
 }
 
-static int _fwrite(const char* src, size_t elem_size, size_t elem_count, IO_FILE* stream) {
+static int _fwrite(__FILE *stream, const char* src, size_t elem_size, size_t elem_count) {
     size_t transferred = 0;
     size_t transfer_size = elem_size * elem_count;
     while (transfer_size) {
@@ -47,7 +49,7 @@ static int _fwrite(const char* src, size_t elem_size, size_t elem_count, IO_FILE
     return (int)transferred;
 }
 
-static int _fread(void* buffer, size_t elem_size, size_t elem_count, IO_FILE* stream) {
+static int _fread(__FILE * stream, void* buffer, size_t elem_size, size_t elem_count) {
     char* wp = (char*)buffer;
     size_t transferred = 0;
     size_t transfer_size = elem_size * elem_count;
@@ -63,52 +65,88 @@ static int _fread(void* buffer, size_t elem_size, size_t elem_count, IO_FILE* st
     return (int)transferred;
 }
 
-static size_t _ftell(IO_FILE* stream) {
+static size_t _ftell(__FILE* stream) {
     return stream->_pos;
 }
 
 //TODO: initialise these with some internal function
-FILE *const stdin;
-FILE *const stdout;
-FILE *const stderr;
+__FILE *const stdin;
+__FILE *const stdout;
+__FILE *const stderr;
 
-FILE *fopen(const char *RESTRICT, const char *RESTRICT) {
+__FILE *fopen(const char *RESTRICT path, const char *RESTRICT flags) {
+
+    //TODO: atomic
+    if (!_available_file_handles) {
+        //TODO: set error
+        return 0;
+    }
+
+    __FILE* fp = _file_handle_allocator->alloc(sizeof(__FILE));
+    fp->_fd = sys_open(path, flags);
+    fp->_pos = 0;
+
+    return fp;
+}
+
+#define F_NULLPTR_CHECKED(f)\
+if((f)==0) {\
+    return -1;\
+}
+
+int fprintf (__FILE *f, const char *RESTRICT fmt, ...) {
 
 }
 
-int fclose(FILE *) {
+int fclose(__FILE * f) {
+    F_NULLPTR_CHECKED(f);
+    //TODO: some checks
+    fflush(f);
+    sys_close(f->_fd);
+    _file_handle_allocator->free(f);
+
+    return 0;
+}
+
+int feof(__FILE * f) {
+    F_NULLPTR_CHECKED(f);
+    return (int)__feof(f);
+}
+
+int ferror(__FILE * f) {
+    F_NULLPTR_CHECKED(f);
+    return (int)__ferror(f);
+}
+
+int fflush(__FILE * f) {
+    F_NULLPTR_CHECKED(f);
+    return f->_flush(f);
+}
+
+void clearerr(__FILE *) {
 
 }
 
-int feof(FILE *) {
+int fseek(__FILE *, long, int) {
 
 }
 
-int ferror(FILE *) {
+long ftell(__FILE *) {
 
 }
 
-int fflush(FILE *) {
+size_t fread(void *RESTRICT, size_t, size_t, __FILE *RESTRICT) {
 
 }
 
-void clearerr(FILE *) {
+size_t fwrite(const void *RESTRICT, size_t, size_t, __FILE *RESTRICT) {
+
 
 }
 
-int fseek(FILE *, long, int) {
+int __file_initialize(dynamic_allocation_policy_t* allocator_policy) {
 
-}
-
-long ftell(FILE *) {
-
-}
-
-size_t fread(void *RESTRICT, size_t, size_t, FILE *RESTRICT) {
-
-}
-
-size_t fwrite(const void *RESTRICT, size_t, size_t, FILE *RESTRICT) {
-
-
+    _file_handle_allocator = allocator_policy->allocator;
+    
+    return 0;
 }

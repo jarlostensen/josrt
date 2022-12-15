@@ -39,10 +39,12 @@ void __libc_start_main(int *(main) (int, char * *),
 		}
 		else {
 			printf("[__libc_start_main] unsupported HW; AVX2 not enabled\n");
+			exit_code = -2;
 		}
 	}
 	else {
 		printf("[__libc_start_main] unsupported HW; XMM/YMM not enabled\n");
+		exit_code = -3;
 	}
     __exit(exit_code);
 }

@@ -6,10 +6,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#ifndef _JOSRT_KERNEL_BUILD
-#define EOF (int)(-1)
-#endif 
-
 #include "include/_vprint.h"
 
 //ZZZ: this include file issue needs tidying!
