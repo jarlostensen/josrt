@@ -1,13 +1,13 @@
 set(CMAKE_C_STANDARD 17)
 
-include(FetchContent)
-FetchContent_Declare(joBase
-    GIT_REPOSITORY https://github.com/jarlostensen/joBase
-    GIT_TAG 1.0.0-rc1
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-)
-FetchContent_MakeAvailable(jobase)
+# include(FetchContent)
+# FetchContent_Declare(joBase
+#     GIT_REPOSITORY https://github.com/jarlostensen/joBase
+#     GIT_TAG 1.0.0-rc1
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND ""
+# )
+# FetchContent_MakeAvailable(jobase)
 
 # the only one supported for now
 # TODO: this is now set where this is being used set(ARCH "x86_64")
@@ -57,7 +57,6 @@ else()
   message(FATAL_ERROR "(currently) unsupported toolchain ${CMAKE_C_COMPILER_ID}")
 endif()
 
-
 add_library(josrt STATIC "")
 target_compile_options(josrt PRIVATE "${COMPILER_FLAGS}")
 target_include_directories(josrt PRIVATE
@@ -94,6 +93,6 @@ function(josrt_add_executable NAME)
   else()
     target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
   endif()
-  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS})
+  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS})  
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
 endfunction()
