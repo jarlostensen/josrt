@@ -10,7 +10,7 @@
     typedef uint16_t   wchar_t;
 #endif
 
-size_t wcslen( const wchar_t *str );
+size_t wcslen( const int *str );
 
 #endif // _JOS_WCHAR_H
 
