@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.22)
 set(CMAKE_C_STANDARD 17)
 
 # include(FetchContent)
@@ -15,8 +16,7 @@ if (NOT DEFINED ARCH)
   set(ARCH "x86_64" CACHE STRING "Architecture")
 endif()
 
-add_definitions(-DARCH_${ARCH})
-add_definitions(-DARCH="${ARCH}")
+add_definitions(-DARCH=${ARCH})
 set(ELF ${ARCH})
 
 message(STATUS "Target CPU ${ARCH}")
@@ -43,7 +43,7 @@ set(ISYSROOT ${CMAKE_SOURCE_DIR}/include)
 set(CMAKE_CROSSCOMPILING TRUE)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PREFIX_PATH  "${ISYSROOT}")
-set(COMPILER_CODEGEN_FLAGS -m64 -mavx2 ${WARNS})
+set(COMPILER_CODEGEN_FLAGS -m64 -march=native ${WARNS})
 
 set(LINKER_FLAGS 
       -nostdlib
@@ -52,18 +52,25 @@ set(LINKER_FLAGS
 
 # configure active compiler
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  set(COMPILER_FLAGS "${COMPILER_CODEGEN_FLAGS}" -target "${TRIPLE}" -nostdinc -ffreestanding -isystem "${ISYSROOT}")
+  set(COMPILER_FLAGS ${COMPILER_CODEGEN_FLAGS} -nostdinc -ffreestanding -isystem ${ISYSROOT})
 else()
+  set(COMPILER_FLAGS "")
   message(FATAL_ERROR "(currently) unsupported toolchain ${CMAKE_C_COMPILER_ID}")
 endif()
 
-add_library(josrt STATIC "")
-target_compile_options(josrt PRIVATE "${COMPILER_FLAGS}")
-target_include_directories(josrt PRIVATE
-  "${CMAKE_SYSTEM_PREFIX_PATH}"
-  "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
-  ${jobase_SOURCE_DIR}
+message("-- Compiling using ${CMAKE_C_COMPILER_ID} with: ${COMPILER_FLAGS}")
+
+if(JOSRT_REQUIRES_IO)
+  add_compile_definitions(
+    _JOSRT_REQUIRES_IO=1
   )
+endif()
+
+add_library(josrt STATIC "")
+target_compile_options(josrt PRIVATE 
+  ${COMPILER_FLAGS}
+  "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
+)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 if (_JOSRT_ISPC)
@@ -93,6 +100,9 @@ function(josrt_add_executable NAME)
   else()
     target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
   endif()
-  target_compile_options(${ELF_TARGET_NAME} PRIVATE ${COMPILER_FLAGS})  
+  target_compile_options(${ELF_TARGET_NAME} PRIVATE 
+    ${COMPILER_FLAGS}
+    "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
+    ) 
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
 endfunction()

@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <josrt.h>
 
+// used as a fallback
 void* musl_memcpy(void* RESTRICT dest, const void* RESTRICT src, size_t n)
 {
 	unsigned char* d = dest;
