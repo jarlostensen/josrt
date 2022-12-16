@@ -30,6 +30,12 @@ long strtol(const char *restrict s, char **restrict p, int base);
 intmax_t strtoimax(const char *restrict s, char **restrict p, int base);
 uintmax_t strtoumax(const char *restrict s, char **restrict p, int base);
 
+// We can only support this when we are more __STD_LIBC__ compliant
+// extern int posix_memalign(void **__memptr, size_t __alignment, size_t __size);
+// extern void* malloc(size_t);
+// extern void free(void*);
+
+
 int* _errno(void);
 #define errno (*_errno())
 

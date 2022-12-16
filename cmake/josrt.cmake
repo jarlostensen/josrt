@@ -73,6 +73,9 @@ target_compile_options(josrt PRIVATE
 )
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
+# until we support the full whack we don't...
+add_compile_definitions(__STDC_HOSTED__=0)
+
 if (_JOSRT_ISPC)
   add_library(josrt_ispc STATIC "")
   add_subdirectory(src/ispc)
