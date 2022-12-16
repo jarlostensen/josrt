@@ -3,6 +3,7 @@ RT libraries including minimal Libc for my OS/Kernel projects.
 
 ## Build
 Plain vanilla CMake. 
+If you need IO support (i.e. stuff like printf) then you must define this for CMake as `cmake .. -DJOSRT_REQUIRES_IO=1`. 
 
 ## Platform support
 These libraries are (at present) 100% x86-64 + AVX2 and will not work otherwise. 
@@ -16,3 +17,5 @@ I want to port to aarm64 eventually but I have no intention of supporting anythi
 
 ## Sources
 I've shamelessly incorporated code from Musl, Zephyr OS, and LLVM 
+
+
