@@ -13,7 +13,8 @@ enum hex_dump_unit_size
 	k64bitInt,
 };
 
-void fhex_dump_mem(FILE* f, const void* mem, size_t bytes, enum hex_dump_unit_size unit_size);
+typedef void (*hex_dump_write_line_func_t)(const char*);
+void hex_dump_mem(hex_dump_write_line_func_t write_line_func, const void* mem, size_t bytes, enum hex_dump_unit_size unit_size);
 
 #endif // _JOS_KERNEL_HEX_DUMP_H
 

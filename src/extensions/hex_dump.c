@@ -1,22 +1,21 @@
 
 #include <stdint.h>
 #include <string.h>
-
-#include "hex_dump.h"
+#include <extensions/hex_dump.h>
 
 #ifndef min
 #define min(a,b) ((a)<(b)?(a):(b))
 #define _undef_min
 #endif
 
-#define CHARS_IN_BUFFER(buff) sizeof(buff)/sizeof(wchar_t)
+#define CHARS_IN_BUFFER(buff) sizeof(buff)/sizeof(char)
 //NOTE: explicitly for 64 bit
 #define PRINT_WIDTH 66u
 
 typedef struct _line_ctx
 {
-	wchar_t		_line[128];
-	wchar_t*	_wp;
+	char		_line[128];
+	char*		_wp;
 	size_t		_chars_left;
 	void*		_mem;
 	
@@ -28,36 +27,36 @@ static void _hex_dump_line_init(line_ctx_t* ctx, void* mem)
 	ctx->_mem = mem;
 	ctx->_chars_left = CHARS_IN_BUFFER(ctx->_line);
 	// address prefix
-	size_t n = swprintf(ctx->_wp, ctx->_chars_left,L"%016llx ", (uintptr_t)mem);
+	size_t n = snprintf(ctx->_wp, ctx->_chars_left,"%016llx ", (uintptr_t)mem);
 	ctx->_wp += n;
 	ctx->_chars_left -= n;
 }
 
 static void _hex_dump_line_write_byte(line_ctx_t* ctx, unsigned char byte, int fmtIdx)
 {
-	static const wchar_t* kFmt[2] = {L"%02x ", L"%02x"};
-	size_t n = swprintf(ctx->_wp, ctx->_chars_left, kFmt[fmtIdx], byte);
+	static const char* kFmt[2] = {"%02x ", "%02x"};
+	size_t n = snprintf(ctx->_wp, ctx->_chars_left, kFmt[fmtIdx], byte);
 	ctx->_wp += n;
 	ctx->_chars_left -= n;
 }
 
 static void _hex_dump_line_write_word(line_ctx_t* ctx, unsigned short word)
 {
-	size_t n = swprintf(ctx->_wp, ctx->_chars_left, L"%04x ", word);
+	size_t n = snprintf(ctx->_wp, ctx->_chars_left, "%04x ", word);
 	ctx->_wp += n;
 	ctx->_chars_left -= n;
 }
 
 static void _hex_dump_line_write_dword(line_ctx_t* ctx, unsigned int dword)
 {
-	size_t n = swprintf(ctx->_wp, ctx->_chars_left, L"%08lx ", dword);
+	size_t n = snprintf(ctx->_wp, ctx->_chars_left, "%08lx ", dword);
 	ctx->_wp += n;
 	ctx->_chars_left -= n;
 }
 
 static void _hex_dump_line_write_qword(line_ctx_t* ctx, unsigned long long qword)
 {
-	size_t n = swprintf(ctx->_wp, ctx->_chars_left, L"%016llx ", qword);
+	size_t n = snprintf(ctx->_wp, ctx->_chars_left, "%016llx ", qword);
 	ctx->_wp += n;
 	ctx->_chars_left -= n;
 }
@@ -69,7 +68,7 @@ static void _hex_dump_line_write_raw(line_ctx_t* ctx, size_t byte_run)
 		ctx->_wp[i] = L' ';
 	}
 	
-	wchar_t* wp = ctx->_line + PRINT_WIDTH;
+	char* wp = ctx->_line + PRINT_WIDTH;
 	ctx->_chars_left = CHARS_IN_BUFFER(ctx->_line) - PRINT_WIDTH;
 	const char* rp = (char*)ctx->_mem;
 	for (unsigned i = 0u; i < byte_run; ++i)
@@ -78,18 +77,18 @@ static void _hex_dump_line_write_raw(line_ctx_t* ctx, size_t byte_run)
 		size_t n;
 		if(c >= 32 && c < 127)
 		{
-			n = swprintf(wp, ctx->_chars_left, L"%c", c);
+			n = snprintf(wp, ctx->_chars_left, "%c", c);
 		}
 		else
 		{
-			n = swprintf(wp, ctx->_chars_left, L".");
+			n = snprintf(wp, ctx->_chars_left, ".");
 		}
 		ctx->_chars_left -= n;
 		wp += n;
 	}
 }
 
-static size_t _hex_dump_hex_line(FILE* f, void* mem, size_t bytes, enum hex_dump_unit_size unit_size)
+static size_t _hex_dump_hex_line(hex_dump_write_line_func_t write_line_func, void* mem, size_t bytes, enum hex_dump_unit_size unit_size)
 {
 	line_ctx_t ctx;
 	size_t read = 0;	
@@ -179,16 +178,16 @@ static size_t _hex_dump_hex_line(FILE* f, void* mem, size_t bytes, enum hex_dump
 	
 	if(read)
 	{
-		fprintf(f, "%s\n", ctx._line);
+		write_line_func(ctx._line);
 	}
 	return read;
 }
 
-void fhex_dump_mem(FILE* f, const void* mem, size_t bytes, enum hex_dump_unit_size unit_size)
+void hex_dump_mem(hex_dump_write_line_func_t write_line_func, const void* mem, size_t bytes, enum hex_dump_unit_size unit_size)
 {	
 	while (bytes)
 	{
-		size_t written = _hex_dump_hex_line(f, mem, bytes, unit_size);		
+		size_t written = _hex_dump_hex_line(write_line_func, mem, bytes, unit_size);		
 		mem = (void*)((char*)mem + written);
 		bytes -= written;
 	}
