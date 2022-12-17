@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <joBase.h>
 
 #ifdef _JOSRT_BARE_BONES_BUILD
     // no explicit FILE support
@@ -14,7 +15,7 @@
     #undef _JOSRT_REQUIRES_IO
 #endif
 
-// #define _JOSRT_KERNEL_BUILD for bare bones build (this will also remove some libc functionality)
+#include <assert.h>
 
 // ======================================================
 // Allocator interfaces

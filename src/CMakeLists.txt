@@ -26,11 +26,15 @@ target_sources(josrt PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/string/memcpy.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/string/memmove.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/string/memset.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assert.c"
 )
 
 target_include_directories(josrt PRIVATE 
 "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/include"
+"${CMAKE_SYSTEM_PREFIX_PATH}"
+"${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
+${jobase_SOURCE_DIR}
 )
 
 
@@ -42,9 +46,5 @@ add_library(crt STATIC
 target_include_directories(crt PRIVATE 
 "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
 "${CMAKE_SOURCE_DIR}/include"
+${jobase_SOURCE_DIR}
 )
-
-target_include_directories(josrt PRIVATE
-  "${CMAKE_SYSTEM_PREFIX_PATH}"
-  "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
-  )

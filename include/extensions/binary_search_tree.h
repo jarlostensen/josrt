@@ -40,7 +40,7 @@ _JOSRT_INLINE_FUNC bool binary_search_tree_insert(binary_search_tree_t* tree, ui
 * Returns the size of the tree (number of nodes)
 */
 _JOSRT_INLINE_FUNC size_t binary_search_tree_size(binary_search_tree_t* tree) {
-	_JOS_ASSERT(tree);
+	assert(tree);
 	return tree->_node_count;
 }
 _JOSRT_INLINE_FUNC bool _binary_search_tree_contains_impl(_bsearch_tree_node_t* node, uintptr_t key);
@@ -65,8 +65,8 @@ _JOSRT_API_FUNC void _binary_search_tree_sorted_traverse_impl(binary_search_tree
 * Traverse the tree in sorted order (smallest->largest key) and call the visitor function on each node
 */
 _JOSRT_INLINE_FUNC void binary_search_tree_sorted_traverse(binary_search_tree_t* tree, binary_search_tree_node_visitor_t visitor) {
-	_JOS_ASSERT(tree);
-	_JOS_ASSERT(visitor);
+	assert(tree);
+	assert(visitor);
 	if (tree->_root) {
 		_binary_search_tree_sorted_traverse_impl(tree, tree->_root, visitor);
 	}
@@ -122,7 +122,7 @@ _JOSRT_INLINE_FUNC void _binary_search_tree_recalc_height(_bsearch_tree_node_t* 
 
 _JOSRT_INLINE_FUNC _bsearch_tree_node_t* _binary_search_tree_rotate_left(_bsearch_tree_node_t* node) {
 	_bsearch_tree_node_t* pivot = node->_left;
-	_JOS_ASSERT(pivot);
+	assert(pivot);
 	_bsearch_tree_node_t* t = pivot->_right;
 	pivot->_right = node;
 	node->_left = t;
@@ -132,7 +132,7 @@ _JOSRT_INLINE_FUNC _bsearch_tree_node_t* _binary_search_tree_rotate_left(_bsearc
 
 _JOSRT_INLINE_FUNC _bsearch_tree_node_t* _binary_search_tree_rotate_right(_bsearch_tree_node_t* node) {
 	_bsearch_tree_node_t* pivot = node->_right;
-	_JOS_ASSERT(pivot);
+	assert(pivot);
 	_bsearch_tree_node_t* t = pivot->_left;
 	pivot->_left = node;
 	node->_right = t;
@@ -220,8 +220,8 @@ _JOSRT_INLINE_FUNC bool _binary_search_tree_find_impl(binary_search_tree_t* tree
 }
 
 _JOSRT_API_FUNC void binary_search_tree_create(binary_search_tree_t* tree, size_t node_size, alloc_alignment_t node_alignment, generic_allocator_t* allocator) {
-	_JOS_ASSERT(tree);
-	_JOS_ASSERT(allocator);
+	assert(tree);
+	assert(allocator);
 
 	tree->_allocator = allocator;
 	tree->_node_size = node_size;

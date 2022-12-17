@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.22)
 set(CMAKE_C_STANDARD 17)
 
-# include(FetchContent)
-# FetchContent_Declare(joBase
-#     GIT_REPOSITORY https://github.com/jarlostensen/joBase
-#     GIT_TAG 1.0.0-rc1
-#     CONFIGURE_COMMAND ""
-#     BUILD_COMMAND ""
-# )
-# FetchContent_MakeAvailable(jobase)
+include(FetchContent)
+FetchContent_Declare(joBase
+    GIT_REPOSITORY https://github.com/jarlostensen/joBase
+    GIT_TAG 1.0.0-rc2
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+)
+FetchContent_MakeAvailable(jobase)
 
 # the only one supported for now
 # TODO: this is now set where this is being used set(ARCH "x86_64")
@@ -96,6 +96,7 @@ function(josrt_add_elf NAME WITH_IO WITH_FILE)
   target_include_directories(${ELF_TARGET_NAME} PRIVATE
   "${CMAKE_SYSTEM_PREFIX_PATH}"
   "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
+  ${jobase_SOURCE_DIR}
   )
   
   if(_JOSRT_ISPC)

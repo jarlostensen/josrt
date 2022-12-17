@@ -61,7 +61,7 @@ Usage example:
 #include <stdarg.h>
 #include <string.h>
 #include <josrt.h>
-#include <collections.h>
+#include "collections.h"
 
 typedef struct _hive {
 	unordered_map_t _keys;
@@ -227,7 +227,7 @@ _JOSRT_API_FUNC  void hive_create(hive_t* hive, generic_allocator_t* allocator) 
 }
 
 _JOSRT_API_FUNC size_t hive_memory_footprint(hive_t* hive) {
-	_JOS_ASSERT(hive);
+	assert(hive);
 	size_t size = sizeof(hive_t) + unordered_map_memory_footprint(&hive->_keys);
 	unordered_map_iterator_t iter = unordered_map_iterator_begin(&hive->_keys);
 	while (!unordered_map_iterator_at_end(&iter)) {
@@ -253,7 +253,7 @@ _JOSRT_API_FUNC size_t hive_memory_footprint(hive_t* hive) {
 
 _JOSRT_API_FUNC void hive_set(hive_t* hive, const char* key, ...) {
 
-	_JOS_ASSERT(hive);
+	assert(hive);
 
 	va_list args;
 	va_start(args, key);
@@ -394,7 +394,7 @@ _JOSRT_API_FUNC jo_status_t hive_get(hive_t* hive, const char* key, vector_t* ou
 		return _JO_STATUS_SUCCESS;
 	}
 
-	_JOS_ASSERT(entry->_type == kHiveEntry_Key);
+	assert(entry->_type == kHiveEntry_Key);
 	const char* pack;
 	int pack_size;
 	if (entry->_size < 0) {
@@ -456,7 +456,7 @@ _JOSRT_API_FUNC jo_status_t hive_lget(hive_t* hive, const char* key, vector_t* o
 	_hive_entry_t* entry = _hive_find(hive, key);
 	if (!entry)
 		return _JO_STATUS_NOT_FOUND;
-	_JOS_ASSERT(entry->_type == kHiveEntry_List);
+	assert(entry->_type == kHiveEntry_List);
 	vector_append(out_values, (vector_t*)&entry->_storage);
 
 	return _JO_STATUS_SUCCESS;

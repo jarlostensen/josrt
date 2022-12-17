@@ -47,91 +47,91 @@ _JOSRT_API_FUNC void vector_append(vector_t* dest, const vector_t* src);
 // remove an element from the vector by swapping it with the last and shrinking the vector
 _JOSRT_API_FUNC jo_status_t vector_remove(vector_t* vec, const size_t at);
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE generic_allocator_t* vector_allocator(vector_t* vec) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE generic_allocator_t* vector_allocator(vector_t* vec) {
 	return vec->_allocator;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_create_like(vector_t* vec, const vector_t* original) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_create_like(vector_t* vec, const vector_t* original) {
 	vector_create(vec, original->_capacity, original->_element_size, original->_allocator);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_reset(vector_t* vec) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_reset(vector_t* vec) {
 	// simply reset, no clearing of memory!
 	vec->_size = 0;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE size_t vector_element_size(vector_t* vec) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE size_t vector_element_size(vector_t* vec) {
 	return vec->_element_size;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE size_t vector_element_stride(vector_t* vec) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE size_t vector_element_stride(vector_t* vec) {
 	return vec->_stride;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_destroy(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_destroy(vector_t* vec)
 {
 	vec->_allocator->free(vec->_allocator, vec->_memory);
 	memset(vec, 0, sizeof(vector_t));
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_swap(vector_t* veca, vector_t* vecb) {
-#if defined(_JOS_SWAP_PTR)
-	_JOS_SWAP_PTR(veca->_allocator, vecb->_allocator);
-	_JOS_SWAP_PTR(veca->_data, vecb->_data);
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_swap(vector_t* veca, vector_t* vecb) {
+#if defined(_JOSRT_SWAP_PTR)
+	_JOSRT_SWAP_PTR(veca->_allocator, vecb->_allocator);
+	_JOSRT_SWAP_PTR(veca->_data, vecb->_data);
 #else
 	uintptr_t tmp_a = (uintptr_t)veca->_allocator;
 	uintptr_t tmp_b = (uintptr_t)vecb->_allocator;
-	_JOS_SWAP(tmp_a, tmp_b);
+	_JOSRT_SWAP(tmp_a, tmp_b);
 	veca->_allocator = (generic_allocator_t*)tmp_a;
 	vecb->_allocator = (generic_allocator_t*)tmp_b;
 	tmp_a = (uintptr_t)veca->_data;
 	tmp_b = (uintptr_t)vecb->_data;
-	_JOS_SWAP(tmp_a, tmp_b);
+	_JOSRT_SWAP(tmp_a, tmp_b);
 	veca->_data = (void*)tmp_a;
 	vecb->_data = (void*)tmp_b;
 #endif
-	_JOS_SWAP(veca->_capacity, vecb->_capacity);
-	_JOS_SWAP(veca->_size, vecb->_size);
-	_JOS_SWAP(veca->_element_size, vecb->_element_size);
+	_JOSRT_SWAP(veca->_capacity, vecb->_capacity);
+	_JOSRT_SWAP(veca->_size, vecb->_size);
+	_JOSRT_SWAP(veca->_element_size, vecb->_element_size);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE size_t vector_size(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE size_t vector_size(vector_t* vec)
 {
 	return vec->_size;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE size_t vector_capacity(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE size_t vector_capacity(vector_t* vec)
 {
 	return vec->_capacity;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE bool vector_is_empty(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE bool vector_is_empty(vector_t* vec)
 {
 	return !vec->_size;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE bool vector_is_full(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE bool vector_is_full(vector_t* vec)
 {
 	return vec->_size == vec->_capacity;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_clear(vector_t* vec)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_clear(vector_t* vec)
 {
 	vec->_size = 0;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void vector_push_back_ptr(vector_t* vec, void* ptr)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void vector_push_back_ptr(vector_t* vec, void* ptr)
 {
-	_JOS_ASSERT(sizeof(void*) == vec->_element_size);
+	assert(sizeof(void*) == vec->_element_size);
 	vector_push_back(vec, &ptr);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void* vector_at_ptr(vector_t* vec, size_t n)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void* vector_at_ptr(vector_t* vec, size_t n)
 {
 	return (void*)(*((uintptr_t**)vector_at(vec, n)));
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void* vector_data(vector_t* vec) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void* vector_data(vector_t* vec) {
 	return vec->_data;
 }
 
@@ -225,7 +225,7 @@ typedef bool(*map_key_cmp_func)(map_key_t, map_key_t);
 // helper: returns 32 bit hash (Pearson) for a key as const char*
 _JOSRT_API_FUNC uint32_t map_str_hash_func(const void* key);
 // helper: string compare function
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE bool map_str_cmp_func(const void* a, const void* b) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE bool map_str_cmp_func(const void* a, const void* b) {
 	return !strcmp((const char*)a, (const char*)b);
 }
 
@@ -294,11 +294,11 @@ typedef struct _unordered_map_iterator {
 
 } unordered_map_iterator_t;
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE bool unordered_map_iterator_at_end(unordered_map_iterator_t* iter) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE bool unordered_map_iterator_at_end(unordered_map_iterator_t* iter) {
 	return iter->_i == iter->_umap->_num_slots;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE unordered_map_iterator_t unordered_map_iterator_begin(unordered_map_t* umap) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE unordered_map_iterator_t unordered_map_iterator_begin(unordered_map_t* umap) {
 	unordered_map_iterator_t iter = {
 		._umap = umap
 	};
@@ -316,13 +316,13 @@ _JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE unordered_map_iterator_t unordered_map_ite
 
 _JOSRT_API_FUNC void unordered_map_iterator_next(unordered_map_iterator_t* iter);
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE map_key_t unordered_map_iterator_key(unordered_map_iterator_t* iter) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE map_key_t unordered_map_iterator_key(unordered_map_iterator_t* iter) {
 	if ( iter->_umap->_key_type == kMap_Type_Value )
 		return (map_key_t)vector_at(iter->_umap->_slots + iter->_i, iter->_j);
 	return *(map_key_t**)vector_at(iter->_umap->_slots + iter->_i, iter->_j);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE map_value_t unordered_map_iterator_value(unordered_map_iterator_t* iter) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE map_value_t unordered_map_iterator_value(unordered_map_iterator_t* iter) {
 	return (map_value_t)((uintptr_t)vector_at(iter->_umap->_slots + iter->_i, iter->_j) + iter->_umap->_key_size);
 }
 
@@ -397,11 +397,11 @@ _JOSRT_INLINE_FUNC paged_list_iterator_t paged_list_iterator_begin(paged_list_t*
 	};
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE bool paged_list_iterator_has_next(paged_list_iterator_t* iter) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE bool paged_list_iterator_has_next(paged_list_iterator_t* iter) {
 	return (iter && iter->_header) && (iter->_index < iter->_header->_items);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void* paged_list_iterator_value(paged_list_iterator_t* iter) {
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void* paged_list_iterator_value(paged_list_iterator_t* iter) {
 	return (void*)iter->_offset;
 }
 
@@ -423,26 +423,26 @@ _JOSRT_INLINE_FUNC size_t paged_list_size(paged_list_t* paged_list) {
 #if defined(_JOS_IMPLEMENT_CONTAINERS) && !defined(_JOS_CONTAINERS_IMPLEMENTED)
 #define _JOS_CONTAINERS_IMPLEMENTED
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void _vector_decrease_size(vector_t *vector)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void _vector_decrease_size(vector_t *vector)
 {
-	_JOS_ASSERT(vector->_size);
+	assert(vector->_size);
 	--vector->_size;
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void _vector_increase_size(vector_t *vector)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void _vector_increase_size(vector_t *vector)
 {
-	_JOS_ASSERT(vector->_size<vector->_capacity);
+	assert(vector->_size<vector->_capacity);
 	++vector->_size;
 }
 
 _JOSRT_INLINE_FUNC void _vector_set_at(vector_t* vec, size_t i, void* element)
 {
-	_JOS_ASSERT(vec && element && vec->_capacity && vec->_element_size && i < vec->_capacity);
+	assert(vec && element && vec->_capacity && vec->_element_size && i < vec->_capacity);
 	i *= vec->_stride;
 	memcpy((char*)vec->_data+i, element, vec->_element_size);
 }
 
-_JOSRT_INLINE_FUNC _JOS_ALWAYS_INLINE void* _vector_at(vector_t* vec, size_t n)
+_JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void* _vector_at(vector_t* vec, size_t n)
 {
 	return (void*)((char*)vec->_data + n*vec->_stride);
 }
@@ -501,7 +501,7 @@ _JOSRT_API_FUNC void vector_create_aligned(vector_t* vec, size_t capacity, size_
 // add element to the end of vector
 _JOSRT_API_FUNC void vector_push_back(vector_t* vec, void* element)
 {
-	_JOS_ASSERT(vec && element && vec->_capacity && vec->_element_size);
+	assert(vec && element && vec->_capacity && vec->_element_size);
 	_vector_check_grow(vec);
 	const size_t i = vec->_size * vec->_stride;
 	memcpy((char*)vec->_data + i, element, vec->_element_size);
@@ -510,7 +510,7 @@ _JOSRT_API_FUNC void vector_push_back(vector_t* vec, void* element)
 
 _JOSRT_API_FUNC void vector_push_back_pair(vector_t* vec, 
 			const void* first, size_t first_size, const void* second, size_t second_size) {
-	_JOS_ASSERT(first_size + second_size == vec->_element_size);
+	assert(first_size + second_size == vec->_element_size);
 
 	_vector_check_grow(vec);
 	const size_t i = vec->_size * vec->_stride;
@@ -521,14 +521,14 @@ _JOSRT_API_FUNC void vector_push_back_pair(vector_t* vec,
 
 _JOSRT_API_FUNC void vector_set_at(vector_t* vec, size_t i, void* element)
 {
-	_JOS_ASSERT(i < vec->_size);
+	assert(i < vec->_size);
 	_vector_set_at(vec, i, element);
 }
 
 // get element at index n
 _JOSRT_API_FUNC void* vector_at(vector_t* vec, size_t n)
 {
-	_JOS_ASSERT(vec && n < vec->_size);
+	assert(vec && n < vec->_size);
 	return _vector_at(vec, n);
 }
 
@@ -545,7 +545,7 @@ _JOSRT_API_FUNC jo_status_t vector_remove(vector_t* vec, const size_t at) {
 }
 
 _JOSRT_API_FUNC void vector_append(vector_t* dest, const vector_t* src) {
-	_JOS_ASSERT(src->_element_size == dest->_element_size);
+	assert(src->_element_size == dest->_element_size);
 
 	size_t chunk_size = min(dest->_capacity - dest->_size, src->_size);
 	const char* src_ptr = src->_data;
@@ -595,7 +595,7 @@ _JOSRT_API_FUNC void queue_pop(queue_t* queue)
 
 _JOSRT_API_FUNC void queue_push(queue_t* queue, void * element)
 {
-	_JOS_ASSERT(!queue_is_full(queue));
+	assert(!queue_is_full(queue));
 	_vector_set_at(queue->_elements, queue->_tail, element);
 	queue->_tail = (queue->_tail+1) % vector_capacity(queue->_elements);
 	_vector_increase_size(queue->_elements);
@@ -604,8 +604,8 @@ _JOSRT_API_FUNC void queue_push(queue_t* queue, void * element)
 // policy for pointers, pushes the pointer value ptr on to the queue.
 _JOSRT_API_FUNC void queue_push_ptr(queue_t* queue, void * ptr)
 {
-	_JOS_ASSERT(!queue_is_full(queue));
-	_JOS_ASSERT(sizeof(void*)==queue->_elements->_element_size);
+	assert(!queue_is_full(queue));
+	assert(sizeof(void*)==queue->_elements->_element_size);
 	_vector_set_at(queue->_elements, queue->_tail, &ptr);
 	queue->_tail = (queue->_tail+1) % vector_capacity(queue->_elements);
 	_vector_increase_size(queue->_elements);
@@ -693,10 +693,10 @@ _JOSRT_API_FUNC uint32_t map_str_hash_func(const void* key) {
 		}
 		for (int i = 0; i < 254; ++i) {
 			int idx = i + 1 + (rand() % (254 - i));
-			_JOS_SWAP(kPermutations[i], kPermutations[idx]);
+			_JOSRT_SWAP(kPermutations[i], kPermutations[idx]);
 		}
 		// always swap the last two elements
-		_JOS_SWAP(kPermutations[254], kPermutations[255]);
+		_JOSRT_SWAP(kPermutations[254], kPermutations[255]);
 	}
 
 	unsigned char hash[4];
@@ -726,15 +726,15 @@ _JOSRT_API_FUNC void unordered_map_create(unordered_map_t* umap, unordered_map_c
 	umap->_num_slots = 511;
 	umap->_occupancy = 0;
 	umap->_slots = allocator->alloc(allocator, sizeof(vector_t) * umap->_num_slots);
-	_JOS_ASSERT(args->key_type == kMap_Type_Value || sizeof(args->key_size) == sizeof(void*));
-	_JOS_ASSERT(umap->_slots);
+	assert(args->key_type == kMap_Type_Value || sizeof(args->key_size) == sizeof(void*));
+	assert(umap->_slots);
 	for (size_t i = 0; i < umap->_num_slots; ++i) {
 		vector_create(umap->_slots + i, 32, args->key_size + args->value_size, allocator);
 	}
 }
 
 _JOSRT_API_FUNC size_t unordered_map_memory_footprint(unordered_map_t* umap) {
-	_JOS_ASSERT(umap);
+	assert(umap);
 	size_t size = 0;
 	for (size_t i = 0; i < umap->_num_slots; ++i) {
 		size += vector_capacity(umap->_slots + i);

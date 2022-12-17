@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <extensions/hex_dump.h>
 
+#define _JOS_IMPLEMENT_HIVE
+#define _JOS_IMPLEMENT_CONTAINERS
+#include <extensions/hive.h>
+
 void null_print_hex_line(const char* l) {
     (void)l;
 }

@@ -29,7 +29,7 @@ _JOSRT_INLINE_FUNC size_t linear_allocator_available(linear_allocator_t* linallo
 
 _JOSRT_API_FUNC linear_allocator_t* linear_allocator_create(void* memory, size_t size_adjusted) {
 
-    _JOS_ASSERT(size_adjusted>sizeof(linear_allocator_t));
+    assert(size_adjusted>sizeof(linear_allocator_t));
     linear_allocator_t* linalloc = (linear_allocator_t*)memory;
     linalloc->_begin = memory; 
     linalloc->_end = (void*)((uintptr_t)memory + size_adjusted);

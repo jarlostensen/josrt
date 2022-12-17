@@ -12,7 +12,7 @@ typedef struct _pdb_index_symbol {
 
 extern const pdb_index_symbol_t kEmptySymbol;
 
-static _JOS_ALWAYS_INLINE bool symbol_is_empty(const pdb_index_symbol_t* symbol) {
+static _JOSRT_ALWAYS_INLINE bool symbol_is_empty(const pdb_index_symbol_t* symbol) {
     return symbol->_rva == kEmptySymbol._rva && symbol->_section == kEmptySymbol._section;
 }
 
@@ -28,7 +28,7 @@ typedef struct _pdb_index_node {
 
 } pdb_index_node_t;
 
-static _JOS_ALWAYS_INLINE void pdb_index_node_initialise(pdb_index_node_t* node) {
+static _JOSRT_ALWAYS_INLINE void pdb_index_node_initialise(pdb_index_node_t* node) {
     node->_symbol = kEmptySymbol;
     node->_prefix = kEmptySlice;
     node->_children = kEmptyVector;
