@@ -107,5 +107,9 @@ function(josrt_add_elf NAME WITH_IO WITH_FILE)
     ${COMPILER_FLAGS}
     "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
     ) 
+    target_compile_definitions(${ELF_TARGET_NAME} PRIVATE
+    $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
+    $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
+  )
   target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")  
 endfunction()

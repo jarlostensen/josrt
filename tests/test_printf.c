@@ -17,7 +17,6 @@ int main(int argc, char* argv[], char* envp[]) {
     const char* message = "Hello World from josrt!";
     size_t len = strlen(message);
     printf("%s (%d)\n", message, len);
-
     char buffer[1024];
     int result = snprintf(buffer, sizeof(buffer), "Hello, this is %s and a %d...", "snprintf", 42);
     printf("The result is \"%s\" returned %d\n", buffer, result);
