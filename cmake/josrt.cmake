@@ -60,12 +60,6 @@ endif()
 
 message("-- Compiling using ${CMAKE_C_COMPILER_ID} with: ${COMPILER_FLAGS}")
 
-if(JOSRT_REQUIRES_IO)
-  add_compile_definitions(
-    _JOSRT_REQUIRES_IO=1
-  )
-endif()
-
 add_library(josrt STATIC "")
 target_compile_options(josrt PRIVATE 
   ${COMPILER_FLAGS}
@@ -83,19 +77,25 @@ endif()
 
 ################################################# TESTING
 
-function(josrt_add_executable NAME)
+function(josrt_add_elf NAME WITH_IO WITH_FILE)
 
   if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(ELF_TARGET_NAME ${NAME}d)
   else()
     set(ELF_TARGET_NAME ${NAME})
   endif()
-  
+
+  #NOTE: when creating an executable we need the full start->libc_main loop and this one only supports ELF
+  target_compile_definitions(crt PRIVATE _JOSRT_HOSTED_ELF=1)
+  target_compile_definitions(josrt PRIVATE
+    $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
+    $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
+  )
+    
   add_executable(${ELF_TARGET_NAME} ${ARGN})
   target_include_directories(${ELF_TARGET_NAME} PRIVATE
   "${CMAKE_SYSTEM_PREFIX_PATH}"
   "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
-  ${jobase_SOURCE_DIR}
   )
   
   if(_JOSRT_ISPC)
@@ -107,5 +107,5 @@ function(josrt_add_executable NAME)
     ${COMPILER_FLAGS}
     "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
     ) 
-  target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")
+  target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")  
 endfunction()

@@ -10,5 +10,6 @@ project (josrt ${ENABLED_LANGUAGES})
 
 include(cmake/josrt.cmake)
 
-# TESTING
-josrt_add_executable(test_printf tests/test_printf.c tests/syscall_driver.asm)
+if(JOSRT_BUILD_TESTS)
+    include(tests/tests.cmake)
+endif()
