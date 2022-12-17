@@ -124,16 +124,35 @@ void* musl_memcpy(void* RESTRICT dest, const void* RESTRICT src, size_t n)
 
 void* memcpy(void* RESTRICT dest_, const void* RESTRICT src_, size_t n) {
 
+	#define WORD_SIZE 32
+	#define WORD_ALIGNMENT (WORD_SIZE - 1)
+
 	uint8_t* dest = (uint8_t*)dest_;
 	const uint8_t* src = (uint8_t*)src_;
 
-	if (n <= 64) {
+	if (n <= WORD_SIZE) {		
 #define _COPY_ONE(n)\
 case n:\
 {\
 *dest++ = *src++;\
 }
 		switch (n) {
+			_COPY_ONE(32)
+			_COPY_ONE(31)
+			_COPY_ONE(30)
+			_COPY_ONE(29)
+			_COPY_ONE(28)
+			_COPY_ONE(27)
+			_COPY_ONE(26)
+			_COPY_ONE(25)
+			_COPY_ONE(24)
+			_COPY_ONE(23)
+			_COPY_ONE(22)
+			_COPY_ONE(21)
+			_COPY_ONE(20)
+			_COPY_ONE(19)
+			_COPY_ONE(18)
+			_COPY_ONE(17)
 			_COPY_ONE(16)
 			_COPY_ONE(15)
 			_COPY_ONE(14)
@@ -155,8 +174,8 @@ case n:\
 		return dest_;
 	}
 
-	intptr_t dst_alignment = (intptr_t)(dest_) & 0xf;
-	intptr_t src_alignment = (intptr_t)(src_) & 0xf;
+	intptr_t dst_alignment = (intptr_t)(dest_) & WORD_ALIGNMENT;
+	intptr_t src_alignment = (intptr_t)(src_) & WORD_ALIGNMENT;
 
 	if (dst_alignment != src_alignment) {
 		// for now, cop out...
@@ -170,12 +189,9 @@ case n:\
 	__m256i* dest256 = (__m256i*)dest;
 	const __m256i* src256 = (const __m256i*)src;
 	n -= src_alignment;
-	int runs = n / (32 * 4);
-	int rem = n % (32 * 4);
+	int runs = n / WORD_SIZE;
+	int rem = n % WORD_SIZE;
 	while (runs--) {
-		*dest256++ = *src256++;
-		*dest256++ = *src256++;
-		*dest256++ = *src256++;
 		*dest256++ = *src256++;
 	}
 
