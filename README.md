@@ -15,6 +15,10 @@ I want to port to aarm64 eventually but I have no intention of supporting anythi
 * Minimal CRT startup code and hooks for "syscall" support of low-level functionality.
 * My own extensions which include vector, queue, map, and other tidbits of usefulCness.
 
+## Memory allocation & the Heap
+josRt has *no* malloc or free functionality.
+It is expected that the caller (either a program or a kernel) provides heap allocation and any code inside josRt that requires dynamic memory explicitly takes an `allocator` argument. 
+
 ## Sources
 I've shamelessly incorporated code from Musl, Zephyr OS, and LLVM 
 
