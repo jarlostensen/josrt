@@ -65,7 +65,7 @@ target_compile_options(josrt PRIVATE
   ${COMPILER_FLAGS}
   "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
 )
-add_subdirectory(${CMAKE_SOURCE_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # until we support the full whack we don't...
 add_compile_definitions(__STDC_HOSTED__=0)
