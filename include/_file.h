@@ -23,7 +23,7 @@ typedef struct __FILE_TAG {
 	int(*_write)(struct __FILE_TAG* file, const char*, size_t);
 	void(*_flush)(struct __FILE_TAG* file);
 
-} __FILE;
+} FILE;
 
 #define __feof(f) ((f)->_flags & F_EOF)
 #define __ferror(f) ((f)->_flags & F_ERR)

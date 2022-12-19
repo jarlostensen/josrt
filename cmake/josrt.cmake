@@ -38,7 +38,7 @@ endif(CMAKE_ASM_NASM_COMPILER_LOADED)
 set(CMAKE_SKIP_RPATH ON)
 set(BUILD_SHARED_LIBRARIES OFF)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static")
-set(ISYSROOT ${CMAKE_SOURCE_DIR}/include)
+set(ISYSROOT ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CMAKE_CROSSCOMPILING TRUE)
 set(CMAKE_SYSTEM_NAME Generic)
@@ -75,42 +75,43 @@ if (_JOSRT_ISPC)
   add_subdirectory(src/ispc)
 endif()
 
-################################################# TESTING
+if (NOT JOSRT_BARE_METAL)
+  function(josrt_add_elf NAME WITH_IO WITH_FILE)
 
-function(josrt_add_elf NAME WITH_IO WITH_FILE)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
+      set(ELF_TARGET_NAME ${NAME}d)
+    else()
+      set(ELF_TARGET_NAME ${NAME})
+    endif()
 
-  if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(ELF_TARGET_NAME ${NAME}d)
-  else()
-    set(ELF_TARGET_NAME ${NAME})
-  endif()
-
-  #NOTE: when creating an executable we need the full start->libc_main loop and this one only supports ELF
-  target_compile_definitions(crt PRIVATE _JOSRT_HOSTED_ELF=1)
-  target_compile_definitions(josrt PRIVATE
-    $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
-    $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
-  )
+    #NOTE: when creating an executable we need the full start->libc_main loop and this one only supports ELF
+    target_compile_definitions(crt PRIVATE _JOSRT_HOSTED_ELF=1)
+    target_compile_definitions(josrt PRIVATE
+      $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
+      $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
+    )
+      
+    add_executable(${ELF_TARGET_NAME} ${ARGN})
+    target_include_directories(${ELF_TARGET_NAME} PRIVATE
+    "${CMAKE_SYSTEM_PREFIX_PATH}"
+    "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
+    ${jobase_SOURCE_DIR}
+    )
     
-  add_executable(${ELF_TARGET_NAME} ${ARGN})
-  target_include_directories(${ELF_TARGET_NAME} PRIVATE
-  "${CMAKE_SYSTEM_PREFIX_PATH}"
-  "${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
-  ${jobase_SOURCE_DIR}
-  )
-  
-  if(_JOSRT_ISPC)
-    target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt josrt_ispc)
-  else()
-    target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
-  endif()
-  target_compile_options(${ELF_TARGET_NAME} PRIVATE 
-    ${COMPILER_FLAGS}
-    "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
-    ) 
-    target_compile_definitions(${ELF_TARGET_NAME} PRIVATE
-    $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
-    $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
-  )
-  target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")  
-endfunction()
+    if(_JOSRT_ISPC)
+      target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt josrt_ispc)
+    else()
+      target_link_libraries(${ELF_TARGET_NAME} PRIVATE josrt crt)
+    endif()
+    target_compile_options(${ELF_TARGET_NAME} PRIVATE 
+      ${COMPILER_FLAGS}
+      "$<IF:$<CONFIG:RELEASE>,-Ofast,-ggdb3>"
+      ) 
+      target_compile_definitions(${ELF_TARGET_NAME} PRIVATE
+      $<${WITH_IO}:_JOSRT_REQUIRES_IO=1>
+      $<${WITH_FILE}:_JOSRT_REQUIRES_FILE=1>
+    )
+    target_link_options(${ELF_TARGET_NAME} PRIVATE "${LINKER_FLAGS}")  
+  endfunction()
+endif()
+

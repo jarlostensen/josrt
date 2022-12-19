@@ -31,20 +31,21 @@ target_sources(josrt PRIVATE
 
 target_include_directories(josrt PRIVATE 
 "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
-"${CMAKE_CURRENT_SOURCE_DIR}/include"
-"${CMAKE_SYSTEM_PREFIX_PATH}"
-"${CMAKE_SYSTEM_PREFIX_PATH}/toolchain/llvmintrin"
+"${CMAKE_CURRENT_SOURCE_DIR}/../include"
+"${CMAKE_CURRENT_SOURCE_DIR}/../include/toolchain/llvmintrin"
 ${jobase_SOURCE_DIR}
 )
 
+if(NOT JOSRT_BARE_METAL)
+    add_library(crt STATIC 
+        "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
+        "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
+    )
 
-add_library(crt STATIC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/crt0.asm"
-    "${CMAKE_CURRENT_SOURCE_DIR}/crt/libc_main.c"
-)
+    target_include_directories(crt PRIVATE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
+    "${CMAKE_SOURCE_DIR}/include"
+    ${jobase_SOURCE_DIR}
+    )
+endif()
 
-target_include_directories(crt PRIVATE 
-"${CMAKE_CURRENT_SOURCE_DIR}/internal/include"
-"${CMAKE_SOURCE_DIR}/include"
-${jobase_SOURCE_DIR}
-)

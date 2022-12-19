@@ -1,3 +1,5 @@
+#ifdef _JOSRT_REQUIRES_IO
+
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -33,5 +35,6 @@ int puts(const char* string) {
 	return printf("%s\n", string);
 }
 
-// ================================================================================================================
+#endif // _JOSRT_REQUIRES_IO
+
 

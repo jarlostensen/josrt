@@ -75,6 +75,18 @@ static void test_hive() {
     printf("\n");
 }
 
+
+int test_printf(const char* format, ...)
+{
+  char buf[8192];
+  va_list aptr;
+  va_start(aptr, format);
+  int res = vsnprintf(buf, sizeof(buf), format, aptr);
+  printf(buf);
+  va_end(aptr);
+  return res;
+}
+
 int main(int argc, char* argv[], char* envp[]) {    
 
     const char* message = "Hello World from josrt!";
@@ -82,7 +94,7 @@ int main(int argc, char* argv[], char* envp[]) {
     printf("%s (%d)\n", message, len);
     char buffer[1024];
     int result = snprintf(buffer, sizeof(buffer), "Hello, this is %s and a %d!", "snprintf", 42);
-    printf("The result is \"%s\" returned %d\n", buffer, result);
+    test_printf("The result is \"%s\" returned %d\n", buffer, result);
 
     hex_dump_mem(print_hex_line, buffer, result+8, k8bitInt);
     test_hive();

@@ -9,7 +9,7 @@
 
 typedef struct _printf_file_tag
 {
-	__FILE _f;
+	FILE _f;
 	char*	_buffer;
 	char* 	_wp;
 	const char* _end;

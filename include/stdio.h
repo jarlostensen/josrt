@@ -29,7 +29,6 @@ _JOSRT_API_FUNC int vsnprintf(char *RESTRICT buffer, size_t bufsz, const char * 
 
 #ifdef _JOSRT_REQUIRES_IO
 _JOSRT_API_FUNC int printf(const char* RESTRICT format, ...);
-typedef struct __FILE_TAG FILE;
 _JOSRT_API_FUNC FILE *const stdin;
 _JOSRT_API_FUNC FILE *const stdout;
 _JOSRT_API_FUNC FILE *const stderr;
