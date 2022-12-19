@@ -2,8 +2,17 @@
 RT libraries including minimal Libc for my OS/Kernel projects. 
 
 ## Build
-Plain vanilla CMake. 
+Plain vanilla CMake and Clang (*required*).
 If you need IO support (i.e. stuff like printf) then you must define this for CMake as `cmake .. -DJOSRT_REQUIRES_IO=1`. 
+
+This is an example of a full build with all the tests
+```
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=/usr/bin/clang -DJOSRT_BUILD_TESTS=1
+cmake --build .
+```
+
+### Building for bare metal
+If you want to use the library for bare metal builds without a CRT (i.e. OS kernels) you need to provide `-DJOSRT_BARE_METAL=1` as a `cmake` argument. In this mode there is no safety net!
 
 ## Platform support
 These libraries are (at present) 100% x86-64 + AVX2 and will not work otherwise. 
