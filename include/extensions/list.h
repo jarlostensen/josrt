@@ -43,6 +43,7 @@ typedef struct _list_t {
 	_list_page_t* _tail;
 	size_t		 _page_capacity;
 	size_t		 _element_size;
+    size_t       _count;
     generic_allocator_t* _allocator;
 
 } list_t;
@@ -67,6 +68,9 @@ _JOSRT_INLINE_FUNC  void* list_iterator_at(list_iterator_t* iter) {
 	}
 	return (void*)((char*)(iter->_page + 1) + iter->_i * iter->_list->_element_size);
 }
+_JOSRT_INLINE_FUNC size_t list_size(list_t* list) {
+    return list->_count;
+}
 
 #if defined(_JOS_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_LIST_IMPLEMENTED)
 #define _JOSRT_LIST_IMPLEMENTED
@@ -76,6 +80,7 @@ _JOSRT_API_FUNC void list_create(list_t* list, size_t element_size, size_t min_c
 	list->_page_capacity = (min_count > 1 ? min_count : 1);
 	list->_element_size = element_size;
     list->_allocator = allocator;
+    list->_count = 0;
 	list->_head = (_list_page_t*)list->_allocator->alloc(list->_allocator, 
             element_size * min_count + sizeof(_list_page_t));
 	list->_tail = list->_head;
@@ -99,6 +104,7 @@ _JOSRT_API_FUNC void list_push_back(list_t* list, void* element) {
 	char* slot = (char*)(list->_tail + 1) + (list->_tail->_item_count * list->_element_size);
 	memcpy(slot, element, list->_element_size);
 	++list->_tail->_item_count;
+    ++list->_count;
 }
 
 _JOSRT_API_FUNC void list_iterator_begin(list_t* list, list_iterator_t* iter) {
