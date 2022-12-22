@@ -254,19 +254,26 @@ int _vfprint_impl(FILE* f, const CHAR* RESTRICT format, va_list parameters)
 					++format;
 				}
 			}
-			//TODO: parsing, but ignoring
+			//TODO: parsing, but ignoring except for strings
 			int precision = 0;
 			if (format[0] == TEXT('.'))
 			{
 				++format;
-				pow10 = 1;
-				while (format[0] >= TEXT('0') && format[0] <= TEXT('9'))
-				{
-					precision += (*format - TEXT('0')) * pow10;
-					pow10 *= 10;
-					++format;
+				if ( format[0] == '*' ) {
+					// %.* , argument must be int 					
+					width = (int)va_arg(parameters, int);
+					format++;
 				}
-			}
+				else {
+					pow10 = 1;
+					while (format[0] >= TEXT('0') && format[0] <= TEXT('9'))
+					{
+						precision += (*format - TEXT('0')) * pow10;
+						pow10 *= 10;
+						++format;
+					}
+				}
+			}			
 
 			//TODO: parsed, but only l is handled
 			char length[2] = { 0,0 };
@@ -385,6 +392,16 @@ int _vfprint_impl(FILE* f, const CHAR* RESTRICT format, va_list parameters)
 					unsigned int d = va_arg(parameters, unsigned int);
 					res = _fprintdecimal(f, d, 1);
 				}
+				if (res == EOF)
+					return EOF;
+				written += res;
+			}
+			break;
+			case TEXT('p'):
+			{
+				int res;
+				uintptr_t d = va_arg(parameters, uintptr_t);
+				res = _fprinthex(f, width, d);
 				if (res == EOF)
 					return EOF;
 				written += res;

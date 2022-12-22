@@ -24,7 +24,7 @@ _JOSRT_INLINE_FUNC size_t linear_allocator_available(linear_allocator_t* linallo
     return (size_t)linalloc->_end - (size_t)linalloc->_ptr;
 }
 
-#if defined(_JOS_IMPLEMENT_ALLOCATORS) && !defined(_JOS_LINEAR_ALLOCATOR_IMPLEMENTED)
+#if defined(_JOSRT_IMPLEMENT_ALLOCATORS) && !defined(_JOS_LINEAR_ALLOCATOR_IMPLEMENTED)
 #define _JOS_LINEAR_ALLOCATOR_IMPLEMENTED
 
 _JOSRT_API_FUNC linear_allocator_t* linear_allocator_create(void* memory, size_t size_adjusted) {
