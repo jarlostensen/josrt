@@ -15,8 +15,6 @@
     #undef _JOSRT_REQUIRES_IO
 #endif
 
-#include <assert.h>
-
 // ======================================================
 // Allocator interfaces
 // There is no global malloc/free, all allocations are made from heaps or page pools.
@@ -136,6 +134,13 @@ typedef struct _rect {
     #error "Invalid/unknown toolchain configuration"
 #endif
 
+#define _JOSRT_MAYBE_UNUSED __unused
+#define _JOSRT_INLINE_FUNC __unused static
+#define _JOSRT_API_FUNC extern
+
+_JOSRT_API_FUNC FUNC_NORETURN void __assert_fail(const char *expr, const char *file, int line, const char *func);
+#include <assert.h>
+
 #define _JOSRT_SWAP(a,b)\
     (a) ^= (b);\
     (b) ^= (a); \
@@ -155,10 +160,6 @@ typedef struct _rect {
 #define min(a,b)\
     ((a) < (b) ? (a) : (b))
 #endif
-
-#define _JOSRT_MAYBE_UNUSED __unused
-#define _JOSRT_INLINE_FUNC __unused static
-#define _JOSRT_API_FUNC extern
 
 #define _JOSRT_PTR_IS_ALIGNED(ptr, alignment)\
     (((uintptr_t)ptr & ((uintptr_t)alignment - 1)) == 0)
