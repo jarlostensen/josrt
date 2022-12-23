@@ -15,7 +15,9 @@ size_t josrt_strlen_unsafe(const char* s_);
 
 // safe strlen (but slower)
 size_t strlen(const char*);
+int strnlen(const char* s, size_t max_len);
 
+int strncmp(const char* a, const char* b, size_t max_len);
 int strcmp(const char *l, const char *r);
 
 #ifndef EOF

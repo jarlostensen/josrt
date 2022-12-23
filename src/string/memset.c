@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 
+#define SLOW_AND_SAFE
 #ifdef SLOW_AND_SAFE
 // https://github.com/nadavrot/memset_benchmark/tree/main/src
 void* memset(void* bufptr, int value, size_t size) {

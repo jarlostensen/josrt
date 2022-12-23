@@ -87,6 +87,13 @@ size_t josrt_strlen_unsafe(const char* s_) {
 #include <string.h>
 #include <stdlib.h>
 
+//TODO: optimise
+int strnlen(const char* s, size_t max_len) {
+  int l = 0;
+  while(*s++ && max_len--) ++l;
+  return l;
+}
+
 #undef strlen
 
 /* Return the length of the null-terminated string STR.  Scan for

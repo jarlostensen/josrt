@@ -126,9 +126,11 @@ typedef struct _rect {
     #include <toolchain/llvm.h>
     #include <x86intrin.h>
     #define _JOSRT_TOOLCHAIN_CLANG
+    #define INLINE_ASM __asm volatile 
 #elif defined(__GNUC__) || (defined(_LINKER) && defined(__GCC_LINKER_CMD__))
     #include "toolchain/gcc.h"
     #define _JOSRT_TOOLCHAIN_GCC
+    #define INLINE_ASM __asm volatile 
 #else
     //TODO: VisualStudio
     #error "Invalid/unknown toolchain configuration"
