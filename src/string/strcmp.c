@@ -10,5 +10,5 @@ int strcmp(const char *l, const char *r)
 
 int strncmp(const char* l, const char* r, size_t max_len) {
    for (; max_len && *l == *r && *l; l++, r++, max_len--);
-    return *(unsigned char*)l - *(unsigned char*)r;
+    return !max_len ? 0 : *(unsigned char*)l - *(unsigned char*)r;
 }
