@@ -185,6 +185,8 @@ _JOSRT_INLINE_FUNC void aligned_alloc(generic_allocator_t* allocator, size_t byt
     }
 }
 
+#define member_size(type, member) sizeof(((type *)0)->member)
+
 // ================================================
 // warnings
 
