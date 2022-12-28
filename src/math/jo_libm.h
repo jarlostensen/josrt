@@ -1,5 +1,5 @@
-#ifndef _JOS_KERNEL_MSL_LIBM_H_
-#define _JOS_KERNEL_MSL_LIBM_H_
+#ifndef _JOSRT_KERNEL_MSL_LIBM_H_
+#define _JOSRT_KERNEL_MSL_LIBM_H_
 
 #include <stdint.h>
 
@@ -189,4 +189,4 @@ static inline double fp_barrier(double x)
 
 typedef double double_t;
 
-#endif // _JOS_KERNEL_MSL_LIBM_H_
+#endif // _JOSRT_KERNEL_MSL_LIBM_H_

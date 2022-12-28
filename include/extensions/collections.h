@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _JOS_COLLECTIONS_H
-#define _JOS_COLLECTIONS_H
+#ifndef _JOSRT_COLLECTIONS_H
+#define _JOSRT_COLLECTIONS_H
 
 #include <stdlib.h>
 #include <string.h>
@@ -329,8 +329,8 @@ _JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE map_value_t unordered_map_iterator_value
 // ============================================================================================
 // implementations
 
-#if defined(_JOS_IMPLEMENT_CONTAINERS) && !defined(_JOS_CONTAINERS_IMPLEMENTED)
-#define _JOS_CONTAINERS_IMPLEMENTED
+#if defined(_JOSRT_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_CONTAINERS_IMPLEMENTED)
+#define _JOSRT_CONTAINERS_IMPLEMENTED
 
 _JOSRT_INLINE_FUNC _JOSRT_ALWAYS_INLINE void _vector_decrease_size(vector_t *vector)
 {
@@ -673,4 +673,4 @@ _JOSRT_API_FUNC void unordered_map_iterator_next(unordered_map_iterator_t* iter)
 
 #endif
 
-#endif // _JOS_COLLECTIONS_H
+#endif // _JOSRT_COLLECTIONS_H

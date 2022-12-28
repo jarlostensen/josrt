@@ -1,5 +1,5 @@
-#ifndef _JOS_FIXED_ALLOCATOR_H
-#define _JOS_FIXED_ALLOCATOR_H
+#ifndef _JOSRT_FIXED_ALLOCATOR_H
+#define _JOSRT_FIXED_ALLOCATOR_H
 
 
 #include <stdint.h>
@@ -32,8 +32,8 @@ _JOSRT_INLINE_FUNC bool fixed_allocator_in_pool(fixed_allocator_t* pool, void* p
 	return (uintptr_t)ptr >= begin && (uintptr_t)ptr < pool->_end;
 }
 
-#if defined(_JOS_IMPLEMENT_ALLOCATORS) && !defined(_JOS_FIXED_ALLOCATOR_IMPLEMENTED)
-#define _JOS_FIXED_ALLOCATOR_IMPLEMENTED
+#if defined(_JOSRT_IMPLEMENT_ALLOCATORS) && !defined(_JOSRT_FIXED_ALLOCATOR_IMPLEMENTED)
+#define _JOSRT_FIXED_ALLOCATOR_IMPLEMENTED
 
 _JOSRT_API_FUNC fixed_allocator_t* fixed_allocator_create(void* mem, size_t size, size_t allocUnitPow2)
 {
@@ -99,6 +99,6 @@ _JOSRT_API_FUNC void fixed_allocator_clear(fixed_allocator_t* pool)
 }
 
 
-#endif // _JOS_FIXED_ALLOCATOR_IMPLEMENTED
+#endif // _JOSRT_FIXED_ALLOCATOR_IMPLEMENTED
 
-#endif // _JOS_FIXED_ALLOCATOR_H
+#endif // _JOSRT_FIXED_ALLOCATOR_H

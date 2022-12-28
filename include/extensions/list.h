@@ -72,7 +72,7 @@ _JOSRT_INLINE_FUNC size_t list_size(list_t* list) {
     return list->_count;
 }
 
-#if defined(_JOS_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_LIST_IMPLEMENTED)
+#if defined(_JOSRT_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_LIST_IMPLEMENTED)
 #define _JOSRT_LIST_IMPLEMENTED
 
 _JOSRT_API_FUNC void list_create(list_t* list, size_t element_size, size_t min_count, generic_allocator_t* allocator) {
@@ -163,6 +163,6 @@ _JOSRT_API_FUNC void list_destroy(list_t* list) {
 	list->_head = list->_tail = NULL;
 }
 
-#endif // defined(_JOS_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_LIST_IMPLEMENTED)
+#endif // defined(_JOSRT_IMPLEMENT_CONTAINERS) && !defined(_JOSRT_LIST_IMPLEMENTED)
 
 #endif // _JOSRT_LIST_H

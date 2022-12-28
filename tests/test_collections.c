@@ -6,8 +6,8 @@
 #include <extensions/linear_allocator.h>
 #include <extensions/arena_allocator.h>
 
-#define _JOS_IMPLEMENT_HIVE
-#define _JOS_IMPLEMENT_CONTAINERS
+#define _JOSRT_IMPLEMENT_HIVE
+#define _JOSRT_IMPLEMENT_CONTAINERS
 #include <extensions/hive.h>
 #include <extensions/list.h>
 

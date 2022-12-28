@@ -1,16 +1,16 @@
 #pragma once
-#ifndef _JOS_WCHAR_H
-#define _JOS_WCHAR_H
+#ifndef _JOSRT_WCHAR_H
+#define _JOSRT_WCHAR_H
 
 #include <stdint.h>
 #include <stddef.h>
 
-#ifndef _JOS_WCHAR_DEFINED
-    #define _JOS_WCHAR_DEFINED
+#ifndef _JOSRT_WCHAR_DEFINED
+    #define _JOSRT_WCHAR_DEFINED
     typedef uint16_t   wchar_t;
 #endif
 
 size_t wcslen( const int *str );
 
-#endif // _JOS_WCHAR_H
+#endif // _JOSRT_WCHAR_H
 

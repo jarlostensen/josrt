@@ -574,7 +574,7 @@ static int buffer_print_a(FILE* ff, const char* data, size_t length)
 		}
 		break;
 		//TODO: more of these, if we can be bothered...
-#define _JOS_ESCAPED_CHAR_A(ec,c)\
+#define _JOSRT_ESCAPED_CHAR_A(ec,c)\
 		case ec:\
 			if((rem_chars-length) < 2)\
 			{\
@@ -583,7 +583,7 @@ static int buffer_print_a(FILE* ff, const char* data, size_t length)
 			*f->_wp++ = c;\
 			++written;\
 			break
-		_JOS_ESCAPED_CHAR_A('\"','"');
+		_JOSRT_ESCAPED_CHAR_A('\"','"');
 		default:
 			*f->_wp++ = wc;
 			++written;

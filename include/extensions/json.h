@@ -70,8 +70,8 @@ typedef struct _json_parse_token {
 _JOSRT_API_FUNC json_token_t* json_tokenise(vector_t* in_out_token_slices, char_array_slice_t in_json);
 _JOSRT_API_FUNC json_token_t json_value(vector_t* tokens, const char* key);
 
-#if defined(_JOS_IMPLEMENT_JSON) && !defined(_JOS_JSON_IMPLEMENTED)
-#define _JOS_JSON_IMPLEMENTED
+#if defined(_JOSRT_IMPLEMENT_JSON) && !defined(_JOSRT_JSON_IMPLEMENTED)
+#define _JOSRT_JSON_IMPLEMENTED
 
 _JOSRT_API_FUNC  void json_initialise_writer(json_writer_context_t* ctx, FILE* stream) {
 	memset(ctx, 0, sizeof(json_writer_context_t));

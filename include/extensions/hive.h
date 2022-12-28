@@ -92,14 +92,14 @@ _JOSRT_API_FUNC void hive_visit_values(hive_t* hive,
 	vector_t* values_storage,
 	void* user_data);
 
-#define _JOS_HIVE_VALUE_INT          (char)kHiveValue_Int
-#define _JOS_HIVE_VALUE_STR          (char)kHiveValue_Str
-#define _JOS_HIVE_VALUE_PTR          (char)kHiveValue_Ptr
+#define _JOSRT_HIVE_VALUE_INT          (char)kHiveValue_Int
+#define _JOSRT_HIVE_VALUE_STR          (char)kHiveValue_Str
+#define _JOSRT_HIVE_VALUE_PTR          (char)kHiveValue_Ptr
 #define HIVE_VALUELIST_END			 (char)(~0)
 
-#define HIVE_VALUE_INT(x)       _JOS_HIVE_VALUE_INT, (long long)(x)
-#define HIVE_VALUE_STR(x)       _JOS_HIVE_VALUE_STR, (const char*)(x)
-#define HIVE_VALUE_PTR(x)       _JOS_HIVE_VALUE_PTR, (uintptr_t)(x)
+#define HIVE_VALUE_INT(x)       _JOSRT_HIVE_VALUE_INT, (long long)(x)
+#define HIVE_VALUE_STR(x)       _JOSRT_HIVE_VALUE_STR, (const char*)(x)
+#define HIVE_VALUE_PTR(x)       _JOSRT_HIVE_VALUE_PTR, (uintptr_t)(x)
 
 typedef struct _hive_value {
 
@@ -112,11 +112,11 @@ typedef struct _hive_value {
 
 } hive_value_t;
 
-#if defined(_JOS_IMPLEMENT_HIVE) && !defined(_JOS_HIVE_IMPLEMENTED)
-#define _JOS_HIVE_IMPLEMENTED
+#if defined(_JOSRT_IMPLEMENT_HIVE) && !defined(_JOSRT_HIVE_IMPLEMENTED)
+#define _JOSRT_HIVE_IMPLEMENTED
 
 typedef char _hive_value_t;
-#define _JOS_HIVE_SMALL_ENTRY_SIZE   max(sizeof(vector_t), (2*(sizeof(_hive_value_t)+sizeof(long long))))
+#define _JOSRT_HIVE_SMALL_ENTRY_SIZE   max(sizeof(vector_t), (2*(sizeof(_hive_value_t)+sizeof(long long))))
 
 typedef enum _hive_entry_type_impl {
 	kHiveEntry_Key,
@@ -130,7 +130,7 @@ typedef struct _hive_entry_impl {
 	int         _size;
 	//NOTE: this is used for a lot of things; if the number of values stored with this key is 
 	//      small enough they live here, if not it's a pointer to allocated memory, or a vector if this is a list
-	uint8_t     _storage[_JOS_HIVE_SMALL_ENTRY_SIZE];
+	uint8_t     _storage[_JOSRT_HIVE_SMALL_ENTRY_SIZE];
 
 } _hive_entry_t;
 
@@ -142,19 +142,19 @@ _JOSRT_INLINE_FUNC size_t _hive_param_pack_size(va_list* pack) {
 
 		size += sizeof(_hive_value_t);
 		switch (param) {
-		case _JOS_HIVE_VALUE_INT:
+		case _JOSRT_HIVE_VALUE_INT:
 		{
 			(void)va_arg(*pack, long long);
 			size += sizeof(long long);
 		}
 		break;
-		case _JOS_HIVE_VALUE_STR:
+		case _JOSRT_HIVE_VALUE_STR:
 		{
 			(void)va_arg(*pack, const char*);
 			size += sizeof(const char*);
 		}
 		break;
-		case _JOS_HIVE_VALUE_PTR:
+		case _JOSRT_HIVE_VALUE_PTR:
 		{
 			(void)va_arg(*pack, uintptr_t);
 			size += sizeof(uintptr_t);
@@ -176,21 +176,21 @@ _JOSRT_INLINE_FUNC void _hive_parse_parameter_pack(va_list* params, char* pack) 
 		pack += sizeof(_hive_value_t);
 
 		switch (param) {
-		case _JOS_HIVE_VALUE_INT:
+		case _JOSRT_HIVE_VALUE_INT:
 		{
 			long long value = va_arg(*params, long long);
 			*(long long*)pack = value; 
 			pack += sizeof(long long);
 		}
 		break;
-		case _JOS_HIVE_VALUE_STR:
+		case _JOSRT_HIVE_VALUE_STR:
 		{
 			const char* str = va_arg(*params, const char*);
 			*(char**)pack = (char*)str;
 			pack += sizeof(const char*);
 		}
 		break;
-		case _JOS_HIVE_VALUE_PTR:
+		case _JOSRT_HIVE_VALUE_PTR:
 		{
 			uintptr_t ptr = va_arg(*params, uintptr_t);
 			*(uintptr_t*)pack = ptr;
@@ -278,7 +278,7 @@ _JOSRT_API_FUNC void hive_set(hive_t* hive, const char* key, ...) {
 			}
 			else {
 				// original data is in-place, but it may not be enough space for the new data
-				if (pack_size > _JOS_HIVE_SMALL_ENTRY_SIZE) {
+				if (pack_size > _JOSRT_HIVE_SMALL_ENTRY_SIZE) {
 					pack = allocator->alloc(allocator, pack_size);
 					*(char**)&existing->_storage = pack;
 					existing->_size = (int)pack_size;
@@ -308,7 +308,7 @@ _JOSRT_API_FUNC void hive_set(hive_t* hive, const char* key, ...) {
 		char* pack;
 
 		// if we can store the entry in-situ instead of allocating memory we will
-		if (pack_size > _JOS_HIVE_SMALL_ENTRY_SIZE) {
+		if (pack_size > _JOSRT_HIVE_SMALL_ENTRY_SIZE) {
 			generic_allocator_t* allocator = unordered_map_allocator(&hive->_keys);
 			pack = allocator->alloc(allocator, pack_size);
 			*(char**)&entry._storage = pack;
@@ -351,19 +351,19 @@ _JOSRT_API_FUNC void hive_lpush(hive_t* hive, const char* key, ...) {
 		hive_value_t hive_value;
 
 		switch (param) {
-		case _JOS_HIVE_VALUE_INT:
+		case _JOSRT_HIVE_VALUE_INT:
 		{
 			hive_value.type = kHiveValue_Int;
 			hive_value.value.as_int = va_arg(args, long long);
 		}
 		break;
-		case _JOS_HIVE_VALUE_STR:
+		case _JOSRT_HIVE_VALUE_STR:
 		{
 			hive_value.type = kHiveValue_Str;
 			hive_value.value.as_str = va_arg(args, const char*);
 		}
 		break;
-		case _JOS_HIVE_VALUE_PTR:
+		case _JOSRT_HIVE_VALUE_PTR:
 		{
 			hive_value.type = kHiveValue_Ptr;
 			hive_value.value.as_ptr = va_arg(args, uintptr_t);
@@ -417,7 +417,7 @@ _JOSRT_API_FUNC jo_status_t hive_get(hive_t* hive, const char* key, vector_t* ou
 		hive_value.type = (hive_value_type_t)param;
 
 		switch (param) {
-		case _JOS_HIVE_VALUE_INT:
+		case _JOSRT_HIVE_VALUE_INT:
 		{
 			long long value = *(long long*)pack;
 			hive_value.value.as_int = value;
@@ -425,7 +425,7 @@ _JOSRT_API_FUNC jo_status_t hive_get(hive_t* hive, const char* key, vector_t* ou
 			pack_size -= sizeof(value);
 		}
 		break;
-		case _JOS_HIVE_VALUE_STR:
+		case _JOSRT_HIVE_VALUE_STR:
 		{
 			const char* str = *(const char**)pack;
 			hive_value.value.as_str = str;
@@ -433,7 +433,7 @@ _JOSRT_API_FUNC jo_status_t hive_get(hive_t* hive, const char* key, vector_t* ou
 			pack_size -= sizeof(str);
 		}
 		break;
-		case _JOS_HIVE_VALUE_PTR:
+		case _JOSRT_HIVE_VALUE_PTR:
 		{
 			uintptr_t ptr = *(uintptr_t*)pack;
 			hive_value.value.as_ptr = ptr;

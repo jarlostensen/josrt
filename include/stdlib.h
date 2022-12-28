@@ -1,5 +1,5 @@
-#ifndef _JOS_STDLIB_H
-#define _JOS_STDLIB_H
+#ifndef _JOSRT_STDLIB_H
+#define _JOSRT_STDLIB_H
 
 #include <sys/cdefs.h>
 #include <stddef.h>
@@ -37,4 +37,4 @@ int* _errno(void);
 }
 #endif
 
-#endif // _JOS_STDLIB_H
+#endif // _JOSRT_STDLIB_H

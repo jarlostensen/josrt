@@ -1,5 +1,5 @@
-#ifndef _JOS_KERNEL_ERRNO_H
-#define _JOS_KERNEL_ERRNO_H
+#ifndef _JOSRT_KERNEL_ERRNO_H
+#define _JOSRT_KERNEL_ERRNO_H
 
 // standard error codes lifted from the Linux kernel.
 
@@ -39,4 +39,4 @@
 #define ENOSYS          40
 #define ENOTEMPTY       41
 
-#endif // _JOS_KERNEL_ERRNO_H
+#endif // _JOSRT_KERNEL_ERRNO_H

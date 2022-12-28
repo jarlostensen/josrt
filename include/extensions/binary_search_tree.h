@@ -72,8 +72,8 @@ _JOSRT_INLINE_FUNC void binary_search_tree_sorted_traverse(binary_search_tree_t*
 	}
 }
 
-#if defined(_JOS_IMPLEMENT_BINARY_SEARCH_TREE) && !defined(_JOS_BINARY_SEARCH_TREE_IMPLEMENTED_)
-#define _JOS_BINARY_SEARCH_TREE_IMPLEMENTED_
+#if defined(_JOSRT_IMPLEMENT_BINARY_SEARCH_TREE) && !defined(_JOSRT_BINARY_SEARCH_TREE_IMPLEMENTED_)
+#define _JOSRT_BINARY_SEARCH_TREE_IMPLEMENTED_
 
 /*
 * internal node for the search tree
