@@ -1,3 +1,5 @@
+# WORK IN PROGRESS - not ready for wider use
+
 # josrt
 RT libraries including minimal Libc for my OS/Kernel projects. 
 
